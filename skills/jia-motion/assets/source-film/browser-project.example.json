@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "mode": "source-adaptation",
+  "source": {"root": "E:/视频文档/实际项目/源码改编副本", "files": ["index.html", "src"]},
+  "video": {"width": 1920, "height": 1080, "fps": 30, "duration": 30, "audio": "silent"},
+  "time": {"offset": 0, "rate": 1},
+  "renderer": {"kind": "browser", "entry": "index.html", "seek": "renderAt", "ready": "ready", "capture": "#out"},
+  "checkpoints": []
+}

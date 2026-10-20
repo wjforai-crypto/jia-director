@@ -1,0 +1,4 @@
+interface:
+  display_name: "原创动画 · Jia Motion"
+  short_description: "为导演系统设计并实现连续动作、界面形变与原理演示，逐镜调试交付可修改工程"
+  default_prompt: "使用 $jia-motion 根据已选参考设计原创动画，先做最能暴露问题的动态段，再逐镜实现并检查连续性。"

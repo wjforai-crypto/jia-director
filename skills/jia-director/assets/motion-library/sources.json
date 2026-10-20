@@ -1,0 +1,98 @@
+{
+  "kind": "dependency-provenance-not-project-state",
+  "importedAt": "2026-10-03",
+  "sources": [
+    {
+      "id": "animate",
+      "repository": "emilkowalski/skills",
+      "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+      "role": "reference-only",
+      "license": "MIT for repository code/documents; media rights separate",
+      "files": [
+        {
+          "path": "references/upstream/animate/guide.md",
+          "bytes": 11860,
+          "sha256": "b8ede161270458e6ae2e45e8a1985373515d4c63de5568ddb0f9012d7634356c"
+        },
+        {
+          "path": "references/upstream/animate/LICENSE.txt",
+          "bytes": 1070,
+          "sha256": "4ff5bdb7887ec1435c9cab0e8d1a7caee704d894d65c2a008ccc68b1cc2f260b"
+        },
+        {
+          "path": "references/upstream/animate/RECIPES.md",
+          "bytes": 7957,
+          "sha256": "21ff63d84391db8d96ecdf9170095f55a42c836ccc36fd3269c4772bab031ba2"
+        }
+      ]
+    },
+    {
+      "id": "livecanvas",
+      "repository": "pengchujin/livecanvas",
+      "commit": "d75df0a90a295fc7cf634e7775df47a323ad0bea",
+      "role": "upstream-source-template-with-local-render-adapter",
+      "license": "MIT for repository code/documents; media rights separate",
+      "files": [
+        {
+          "path": "assets/livecanvas-remotion/data.json",
+          "bytes": 2290,
+          "sha256": "482e1ab1bfedb399004c19bc66bc41a70a8e208edc85e5d11959a5472989a8f3"
+        },
+        {
+          "path": "assets/livecanvas-remotion/LICENSE.txt",
+          "bytes": 1067,
+          "sha256": "cb77d791da468f1ac31ff4ad9176ffa8833de3c4b91efc1d6e0a259da37e8c29"
+        },
+        {
+          "path": "assets/livecanvas-remotion/package-lock.json",
+          "bytes": 141244,
+          "sha256": "46abd6f5148b193d9456fc14dd2631a049ab57415334a74f9ea21b8a32f16afd"
+        },
+        {
+          "path": "assets/livecanvas-remotion/package.json",
+          "bytes": 466,
+          "sha256": "e657d7221f29238ce1a5775cb4de4002f6fc00238963d638eb44cebac13d55dc"
+        },
+        {
+          "path": "assets/livecanvas-remotion/render.mjs",
+          "bytes": 1826,
+          "sha256": "d32840ea6cfbd2ab1fd07ed52c70fff503eb8b36c3490369378683fc2f1874f5"
+        },
+        {
+          "path": "assets/livecanvas-remotion/src/index.tsx",
+          "bytes": 6179,
+          "sha256": "19a75b9be238631f302c77a542ce7f838f37e51cb81cfbb0a0e771a583c50965"
+        },
+        {
+          "path": "assets/livecanvas-remotion/THIRD_PARTY_NOTICES.txt",
+          "bytes": 2571,
+          "sha256": "7fd55b1591357eaea3a6ed2952de13f6619602dfcc02172bee5f0a0e2cbd196f"
+        },
+        {
+          "path": "assets/livecanvas-remotion/tsconfig.json",
+          "bytes": 242,
+          "sha256": "9b401926c31b9c4ac888a46ed6cac055bed77a4fa70a4c8972310eecd277169f"
+        }
+      ]
+    },
+    {
+      "id": "awesome-opus",
+      "repository": "yihui-dev/awesome-opus5-5-videos",
+      "commit": "3d54892e2ae5b0e8d337171e6508bba4cec01ab8",
+      "role": "reference-index",
+      "license": "MIT for repository code/documents; media rights separate",
+      "files": [
+        {
+          "path": "assets/motion-library/awesome-opus-LICENSE.txt",
+          "bytes": 1066,
+          "sha256": "0adca04960d4c36b2524d26a400b790c28e583ce019635ab2d3a9ba3dc9dda7f"
+        },
+        {
+          "path": "assets/motion-library/case-index.json",
+          "bytes": 249108,
+          "sha256": "32dd4e05592137db101d31a078be720e778288022616c87ced4deda122efbd14"
+        }
+      ]
+    }
+  ]
+}

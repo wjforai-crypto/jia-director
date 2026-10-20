@@ -1,0 +1,7 @@
+{
+  "source": "C:\\Users\\MSN\\Documents\\Codex\\2026-10-17\\https-xcqpxcghoc-feishu-cn-minutes-obcnmzwc6un83594m3jlcalu\\work\\workflow-revision\\jia-video",
+  "stagedAt": "2026-10-17T18:34:32.8969697+08:00",
+  "name": "jia-video",
+  "description": "王杰的视频生产入口，分为口播视频与无口播视频两条路线。口播以真人原片的校对、粗剪和精剪为基础；无口播从脚本或参考片制作分镜、素材与动画，可含旁白。支持参考片拆解交接、素材复用、本地本人配音和已有工程续作。",
+  "warnings": null
+}

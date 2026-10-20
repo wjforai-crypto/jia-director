@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "compositionId": "jia-motion-starter",
+  "title": "家庭财务安排",
+  "canvas": { "width": 1920, "height": 1080, "fps": 30, "duration": 24, "captionReserve": 0.14 },
+  "style": { "background": "#F4EFE5", "foreground": "#173B36", "muted": "#526963", "accent": "#D05A32" },
+  "shots": [
+    { "id": "opening", "start": 0, "duration": 4, "recipe": "title-reveal", "params": { "eyebrow": "家庭财务", "title": "给日常生活留一点余地", "subtitle": "从看清收支，到安排一笔应急储备" } },
+    { "id": "steps", "start": 4, "duration": 4, "recipe": "flow-steps", "params": { "title": "先理清三件事", "items": [ { "label": "整理收支", "detail": "每月进来多少、需要花多少" }, { "label": "安排储备", "detail": "留出随时可以取用的钱" }, { "label": "定期回看", "detail": "生活变化后，重新安排" } ] } },
+    { "id": "compare", "start": 8, "duration": 4, "recipe": "comparison", "source": "家庭预算的用途分类；金额和取用安排需按实际情况判断", "params": { "title": "两笔钱，各有用途", "left": "日常开支", "right": "应急储备", "rows": [ { "label": "用途", "left": "支付经常发生的生活费用", "right": "应对计划之外的支出" }, { "label": "取用", "left": "按日常预算安排", "right": "需要时能够及时取用" } ] } },
+    { "id": "checks", "start": 12, "duration": 4, "recipe": "checklist", "params": { "title": "把安排落到生活里", "items": [ { "label": "固定支出", "detail": "记住房贷、养育等必要开支" }, { "label": "流动储备", "detail": "核对这笔钱何时能取出来" }, { "label": "责任分工", "detail": "让家人了解账户和取用方式" } ] } },
+    { "id": "bars", "start": 16, "duration": 4, "recipe": "metric-bars", "source": "假设每月必要支出1万元，储备A为3万元、B为6万元；用于说明计算方法", "params": { "title": "这笔储备，能覆盖多久", "unit": "月", "scaleMax": 6, "bars": [ { "label": "储备 A", "value": 3 }, { "label": "储备 B", "value": 6 } ], "note": "储备金额 ÷ 每月必要支出 = 可覆盖月数" } },
+    { "id": "quote", "start": 20, "duration": 4, "recipe": "quote-focus", "params": { "quote": "让一笔安排好的钱，在需要的时候用得上。", "attribution": "家庭财务安排" } },
+    { "id": "speaker", "start": 0, "duration": 3, "recipe": "lower-third", "params": { "name": "王杰", "role": "聊聊家庭财务", "tag": "生活安排", "side": "right" } }
+  ],
+  "captions": [ { "id": "intro-caption", "start": 0, "duration": 4, "text": "生活有变化，家庭的钱也需要提前安排。" } ]
+}

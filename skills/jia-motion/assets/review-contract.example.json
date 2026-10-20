@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Optional handoff fields; fill applicable items with real evidence. Creative review fields are human/Agent observations, not automated aesthetic certification.",
+  "version": null,
+  "roles": {
+    "executor": null,
+    "reviewer": null,
+    "sourceEditor": null
+  },
+  "source": {
+    "root": null,
+    "manifest": null,
+    "manifestSha256": null,
+    "referenceReadOnly": true
+  },
+  "implementation": {
+    "drawing": null,
+    "timeline": null,
+    "export": null,
+    "outputOwner": null
+  },
+  "videoSpec": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "duration": 8,
+    "audio": "none",
+    "frameMode": "cfr"
+  },
+  "time": {
+    "sourceOffset": 0,
+    "sourceRate": 1,
+    "interval": "[start,end)",
+    "frameIndexBase": 0
+  },
+  "cadence": {
+    "outputFps": 30,
+    "bodyPose": null,
+    "lineBoil": null,
+    "particles": null,
+    "temporalSamples": 1,
+    "poseStrategy": null
+  },
+  "events": [],
+  "assets": [],
+  "executionEvidence": [],
+  "findings": [],
+  "review": {
+    "fileCheck": "PENDING",
+    "motionVisual": "PENDING",
+    "continuousViewing": "PENDING",
+    "sourceSeek": "PENDING",
+    "sound": "PENDING",
+    "objectProbe": "NOT_INSTRUMENTED",
+    "viewedRanges": [],
+    "technicalVerified": false,
+    "userAccepted": false,
+    "motionPerformance": "PENDING",
+    "backgroundArt": "PENDING",
+    "creativeEvidence": []
+  },
+  "generatedAssetPlan": {
+    "applicable": false,
+    "actionPhases": [],
+    "poseOrLayerCoverage": [],
+    "backgroundArtIntent": null,
+    "representativeClip": null
+  }
+}

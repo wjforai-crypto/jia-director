@@ -1,0 +1,603 @@
+{
+  "version": "review-1.2",
+  "date": "2026-10-17",
+  "canonical": "E:\\AI-workspace\\All-skills\\shared\\jia-video",
+  "skillVersion": "3.1.1",
+  "formalSkillChanged": false,
+  "files": [
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 407,
+      "sha256": "cde0b75a59cdaa61ae6a2b3415292d785e1b2a98393cf9b8348642c84e5c21f2",
+      "nodes": [
+        "setup"
+      ]
+    },
+    {
+      "path": "assets/directed-motion/evaluator.mjs",
+      "bytes": 2128,
+      "sha256": "a98a6eaef32d017c1ad3f5825e774d25f57f757a03e000afb296139dca9592d7",
+      "nodes": [
+        "motion",
+        "proof"
+      ]
+    },
+    {
+      "path": "assets/directed-motion/life-buffer.example.json",
+      "bytes": 11155,
+      "sha256": "335c2418dbe84f59586fa8e5a0278753f8d3f6f2d198102d4596de98f6b6ad6b",
+      "nodes": [
+        "motion",
+        "proof"
+      ]
+    },
+    {
+      "path": "assets/directed-motion/player.mjs",
+      "bytes": 8353,
+      "sha256": "30969578ce319e3ee4e9fb186746c705b4a11726286a6bf79f8665cc96b1128f",
+      "nodes": [
+        "motion",
+        "proof"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/data.json",
+      "bytes": 2290,
+      "sha256": "482e1ab1bfedb399004c19bc66bc41a70a8e208edc85e5d11959a5472989a8f3",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/LICENSE.txt",
+      "bytes": 1067,
+      "sha256": "cb77d791da468f1ac31ff4ad9176ffa8833de3c4b91efc1d6e0a259da37e8c29",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/NOTICE.md",
+      "bytes": 1371,
+      "sha256": "fc1787ae0e8bcc8da28113b2bf31c6b4162325a49ffb27d63dfd7b67af33b98a",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/package-lock.json",
+      "bytes": 141244,
+      "sha256": "46abd6f5148b193d9456fc14dd2631a049ab57415334a74f9ea21b8a32f16afd",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/package.json",
+      "bytes": 466,
+      "sha256": "e657d7221f29238ce1a5775cb4de4002f6fc00238963d638eb44cebac13d55dc",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/render.mjs",
+      "bytes": 1826,
+      "sha256": "d32840ea6cfbd2ab1fd07ed52c70fff503eb8b36c3490369378683fc2f1874f5",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/src/index.tsx",
+      "bytes": 6179,
+      "sha256": "19a75b9be238631f302c77a542ce7f838f37e51cb81cfbb0a0e771a583c50965",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/THIRD_PARTY_NOTICES.txt",
+      "bytes": 2571,
+      "sha256": "7fd55b1591357eaea3a6ed2952de13f6619602dfcc02172bee5f0a0e2cbd196f",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/livecanvas-remotion/tsconfig.json",
+      "bytes": 242,
+      "sha256": "9b401926c31b9c4ac888a46ed6cac055bed77a4fa70a4c8972310eecd277169f",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "assets/motion-components/motion-runtime.js",
+      "bytes": 5475,
+      "sha256": "9760b97a66353dbbb39bbf7c3d1019cdbebd3735b6a064c1962d7d7b6bd495c1",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "assets/motion-components/motion.css",
+      "bytes": 8553,
+      "sha256": "799afb58e8517c485baa2eec39c1aa7d6f31349e17f6b94d137e03359a56d7d7",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "assets/motion-components/starter.json",
+      "bytes": 2686,
+      "sha256": "3e09565d59a9a83dd2c3e89803eb6b68c5106089abcc264fa0c2ac60f4ae24e0",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "assets/motion-library/awesome-opus-LICENSE.txt",
+      "bytes": 1066,
+      "sha256": "0adca04960d4c36b2524d26a400b790c28e583ce019635ab2d3a9ba3dc9dda7f",
+      "nodes": [
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "assets/motion-library/case-index.json",
+      "bytes": 249108,
+      "sha256": "32dd4e05592137db101d31a078be720e778288022616c87ced4deda122efbd14",
+      "nodes": [
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "assets/motion-library/sources.json",
+      "bytes": 3519,
+      "sha256": "60df38947b8bab1e1d2053572f6079868ad49ac7b4332fae38462ad33c79e388",
+      "nodes": [
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 588,
+      "sha256": "5699d4a91d4e56235ca7dc42c508b436895cf65dc8057bede9ca54475efe9696",
+      "nodes": [
+        "setup"
+      ]
+    },
+    {
+      "path": "references/acceptance.md",
+      "bytes": 3685,
+      "sha256": "da908025df78cf279f457c092c8054f44ffbc19829e1eb4a0bb6e1721afb0279",
+      "nodes": [
+        "qa",
+        "creative",
+        "draft1",
+        "revision",
+        "final",
+        "delivery",
+        "publish"
+      ]
+    },
+    {
+      "path": "references/ai-human-review.md",
+      "bytes": 2653,
+      "sha256": "cd35f25c357431eb543a8c937944e1f8552d7658f00cc3b8ba7100e303c1bcab",
+      "nodes": [
+        "topic",
+        "writing",
+        "content_review",
+        "style_review",
+        "rough_human",
+        "voice_sample",
+        "voice_human",
+        "budget",
+        "draft1",
+        "final",
+        "packaging",
+        "publish"
+      ]
+    },
+    {
+      "path": "references/capabilities.md",
+      "bytes": 2400,
+      "sha256": "da48c6929b608d77e261df46300e8eba5f3e191f7bdd13f63dca9a66e2f5ed86",
+      "nodes": [
+        "setup",
+        "backend"
+      ]
+    },
+    {
+      "path": "references/composition.md",
+      "bytes": 8455,
+      "sha256": "3306bd874a310e2587cdd01420bd35a54fd5cbbef14be91241de7361248eca9b",
+      "nodes": [
+        "compose"
+      ]
+    },
+    {
+      "path": "references/create-video.md",
+      "bytes": 10648,
+      "sha256": "47662838ee38358142c223bc08962463baef59b59d2ebb4ca111902c39f7d3bc",
+      "nodes": [
+        "writing",
+        "sound",
+        "storyboard",
+        "proof",
+        "image",
+        "generation"
+      ]
+    },
+    {
+      "path": "references/data-charts.md",
+      "bytes": 5532,
+      "sha256": "82fe4753160969ced43fe958c3aff289ca16d75693a2314e7d93bd64b24a1aef",
+      "nodes": [
+        "chart",
+        "asset_dispatch"
+      ]
+    },
+    {
+      "path": "references/directed-runtime.md",
+      "bytes": 9295,
+      "sha256": "2f0bd1189988795e4558601d8a9936c6d6b2f6b92753f6fda1a42d6e23d51c8f",
+      "nodes": [
+        "proof",
+        "motion",
+        "asset_dispatch"
+      ]
+    },
+    {
+      "path": "references/edit-source.md",
+      "bytes": 10394,
+      "sha256": "c0a9128bc1e7a85599207286a5032adad44332b4e86eede3d25e3cd6f8f52495",
+      "nodes": [
+        "writing",
+        "recording",
+        "transcript",
+        "rough",
+        "fine",
+        "visual_plan",
+        "oral_proof",
+        "image",
+        "visual_insert"
+      ]
+    },
+    {
+      "path": "references/fine-cut.md",
+      "bytes": 3295,
+      "sha256": "f2e9a67db957aa8a5c85fa9390ca8ff252b31ac80d820f2b6a15a9d9fef97c35",
+      "nodes": [
+        "fine"
+      ]
+    },
+    {
+      "path": "references/material-library.md",
+      "bytes": 5476,
+      "sha256": "416221a5abf81127f01a2188c0ad384dd1d4b3e9e0f4bed37367d7a9358adcde",
+      "nodes": [
+        "material",
+        "asset_dispatch",
+        "visual_insert"
+      ]
+    },
+    {
+      "path": "references/material-semantic.md",
+      "bytes": 1906,
+      "sha256": "f444d362b361305a0fcf5748fd7f0bd8d10850389c7ea97f4b60ac449bb8191a",
+      "nodes": [
+        "material"
+      ]
+    },
+    {
+      "path": "references/media-inspection.md",
+      "bytes": 4177,
+      "sha256": "a2a2b3ed50ba930d3945cc15a8190dd864e309ff9a0a1a09693a322751eb71d3",
+      "nodes": [
+        "qa",
+        "creative"
+      ]
+    },
+    {
+      "path": "references/motion-archive.md",
+      "bytes": 3124,
+      "sha256": "1232e402690d2df5ed4e89c30d9c9a1f788fb33fea609bd9725935bc0007d8e6",
+      "nodes": [
+        "style_review",
+        "archive_reuse",
+        "asset_dispatch",
+        "delivery"
+      ]
+    },
+    {
+      "path": "references/motion-components.md",
+      "bytes": 8196,
+      "sha256": "8ff871cd15d1c1d83e38d5384a8ee0afa58da1062c416e6b2ab34d4a0ce79f6d",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "references/motion-direction.md",
+      "bytes": 6884,
+      "sha256": "fb7d5cc59791bebdb11341be801d7f23514d4506f0a260dd554e43f5fd661b91",
+      "nodes": [
+        "design",
+        "storyboard",
+        "oral_proof",
+        "motion"
+      ]
+    },
+    {
+      "path": "references/motion-library.md",
+      "bytes": 6176,
+      "sha256": "8dcac0b16e30a40eb620d85887ec99d29ec85558c422af232b316ceb68418b03",
+      "nodes": [
+        "design",
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "references/motion-quality.md",
+      "bytes": 4609,
+      "sha256": "00494b8030eda7561573a87b73748ed89495b67ea72a84ab9d31b935b93c2f37",
+      "nodes": [
+        "style_review",
+        "proof",
+        "oral_proof",
+        "motion",
+        "creative"
+      ]
+    },
+    {
+      "path": "references/no-talking-head.md",
+      "bytes": 3593,
+      "sha256": "b1fd12b29ecac39193a53b2ca2185fbef5e861550d7a649c8a37859e2fe68e1f",
+      "nodes": [
+        "reference",
+        "backend"
+      ]
+    },
+    {
+      "path": "references/personal-voice.md",
+      "bytes": 9333,
+      "sha256": "7030a5c6b10f125a1a3aa0a8812ef37336851bc345902d63cfc2696fde01caa8",
+      "nodes": [
+        "sound",
+        "voice_sample",
+        "voice",
+        "voice_human",
+        "budget"
+      ]
+    },
+    {
+      "path": "references/review-stages.md",
+      "bytes": 5241,
+      "sha256": "4bc09ef35d63912db92fa4f63f8eb69290d8558d9e5952078bb8b38aeebd67be",
+      "nodes": [
+        "fine",
+        "visual_plan",
+        "visual_insert",
+        "compose",
+        "revision"
+      ]
+    },
+    {
+      "path": "references/rough-review.md",
+      "bytes": 6076,
+      "sha256": "0f6e54d686576eaa74217bd809dbcb12470f5042090a81d0e6fe5f3e0b0169bb",
+      "nodes": [
+        "transcript",
+        "rough",
+        "rough_human"
+      ]
+    },
+    {
+      "path": "references/runtime.md",
+      "bytes": 15330,
+      "sha256": "5404fa79da1e8f1c9436932dd5a58c4f1aa2fb68fd73b3747f4a7a49249eca09",
+      "nodes": [
+        "setup",
+        "transcript",
+        "talkcraft",
+        "rough",
+        "voice",
+        "generation",
+        "budget",
+        "qa",
+        "revision",
+        "final",
+        "delivery"
+      ]
+    },
+    {
+      "path": "references/shot-recipes.md",
+      "bytes": 2959,
+      "sha256": "00a9f47bcbeda1a895bd0acb9259b0a53b75ad9216d1d5b00702c10aa1e5a608",
+      "nodes": [
+        "design",
+        "storyboard",
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "references/style-routing.md",
+      "bytes": 4123,
+      "sha256": "7f3c6b912be6de072708f1c56e474f43fac5ce8439ba4092885de09d1bcbb6f3",
+      "nodes": [
+        "content_review",
+        "reference",
+        "design",
+        "backend",
+        "asset_dispatch"
+      ]
+    },
+    {
+      "path": "references/talkcraft-adapter.md",
+      "bytes": 4823,
+      "sha256": "13c92c365636b9964a950d1addef81f121a9ed3c065ab6036e62e7054fceae58",
+      "nodes": [
+        "transcript",
+        "talkcraft"
+      ]
+    },
+    {
+      "path": "references/talking-head.md",
+      "bytes": 3084,
+      "sha256": "519ee64c8deb268812efd4636f82e5b998cb20deff5bafc7f37d24d0b77678e3",
+      "nodes": [
+        "reference",
+        "recording"
+      ]
+    },
+    {
+      "path": "references/upstream/animate/guide.md",
+      "bytes": 11860,
+      "sha256": "b8ede161270458e6ae2e45e8a1985373515d4c63de5568ddb0f9012d7634356c",
+      "nodes": [
+        "archive_reuse",
+        "motion"
+      ]
+    },
+    {
+      "path": "references/upstream/animate/LICENSE.txt",
+      "bytes": 1070,
+      "sha256": "4ff5bdb7887ec1435c9cab0e8d1a7caee704d894d65c2a008ccc68b1cc2f260b",
+      "nodes": [
+        "archive_reuse",
+        "motion"
+      ]
+    },
+    {
+      "path": "references/upstream/animate/RECIPES.md",
+      "bytes": 7957,
+      "sha256": "21ff63d84391db8d96ecdf9170095f55a42c836ccc36fd3269c4772bab031ba2",
+      "nodes": [
+        "archive_reuse",
+        "motion"
+      ]
+    },
+    {
+      "path": "references/voice-and-timing.md",
+      "bytes": 4634,
+      "sha256": "0151b549ba1ec62d631de9be2a009b9d70a8cc4e65bb5ce122fc9de501a73ee2",
+      "nodes": [
+        "sound",
+        "voice",
+        "compose"
+      ]
+    },
+    {
+      "path": "scripts/build-composition.mjs",
+      "bytes": 21390,
+      "sha256": "a51e3ac0b548fbe01127a476ef858afa078ffa6f3c806e600609813bf2dc7e4e",
+      "nodes": [
+        "compose"
+      ]
+    },
+    {
+      "path": "scripts/build-directed-motion.mjs",
+      "bytes": 24372,
+      "sha256": "a56cbd398ab374793b390008c31634a7acc76b6206abe16934406707926bdec2",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "scripts/build-motion.mjs",
+      "bytes": 22760,
+      "sha256": "9c856ac54af9749dfa02145bf2447e1186ecfe38f86b3495238ea844cd9d9b30",
+      "nodes": [
+        "motion"
+      ]
+    },
+    {
+      "path": "scripts/inspect-video.mjs",
+      "bytes": 16580,
+      "sha256": "b7a95dd6310dcbdbe6dfa13a15b32d34e62a19c582001e77d3e8165b34ed52e3",
+      "nodes": [
+        "qa"
+      ]
+    },
+    {
+      "path": "scripts/material-library.py",
+      "bytes": 22595,
+      "sha256": "48ce529f5a5bb1ef4adc87ed1f3a20fab692cbef324617403941d49fc97b3a57",
+      "nodes": [
+        "material"
+      ]
+    },
+    {
+      "path": "scripts/material-videoseek.py",
+      "bytes": 5058,
+      "sha256": "e55ae3d599a15dfbdec3e452a87bc14b90a276437bf61a0bf6198521a2480884",
+      "nodes": [
+        "material"
+      ]
+    },
+    {
+      "path": "scripts/normalize-audio.mjs",
+      "bytes": 8622,
+      "sha256": "6f10ff5d62de6d8e6f6ee03f4ef12ab4e1b2248076fb26f4df1080aa853b99cb",
+      "nodes": [
+        "qa"
+      ]
+    },
+    {
+      "path": "scripts/render-data-chart.mjs",
+      "bytes": 17023,
+      "sha256": "a951b6e481a6a1c0802398cf673301eefc0668191003b78a65d3761610a1afa2",
+      "nodes": [
+        "chart"
+      ]
+    },
+    {
+      "path": "scripts/run-video.ps1",
+      "bytes": 1922,
+      "sha256": "0f1d28d01e9ef2bcbf462426e44266909fa1490b5ea58bc008fd30eb0205f08f",
+      "nodes": [
+        "setup"
+      ]
+    },
+    {
+      "path": "scripts/search-motion.mjs",
+      "bytes": 3020,
+      "sha256": "9aa82670537e5b4513b96fb79f1414440bb1c7709838755bbbbbf346cddc076b",
+      "nodes": [
+        "archive_reuse"
+      ]
+    },
+    {
+      "path": "scripts/tests/build-directed-motion.test.mjs",
+      "bytes": 4677,
+      "sha256": "5a537d6574fbef244af17e701a3be22c25b569aff9ef61279464c13a83572a0a",
+      "nodes": [
+        "setup"
+      ]
+    },
+    {
+      "path": "scripts/visible-text-policy.mjs",
+      "bytes": 1433,
+      "sha256": "18295e15ba72e80dc6446e3d5b063ecfd3d16f38825ff091d8fd3c9adf125e90",
+      "nodes": [
+        "qa"
+      ]
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 13764,
+      "sha256": "f5aff8c84056ca9a59e6a666b5f63e7ebd0d1f21f58b620a86d23f55fcbf6e9c",
+      "nodes": [
+        "topic",
+        "setup",
+        "image",
+        "generation"
+      ]
+    }
+  ],
+  "nodeCount": 40,
+  "referenceCount": 31
+}

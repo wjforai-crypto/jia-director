@@ -1,0 +1,6 @@
+interface:
+  display_name: "导演系统"
+  short_description: "人工选题，AI分口播与无口播两条路线生产，保留人工复核、完整工程和Skill流程图"
+  default_prompt: "使用 $jia-director 导演系统承接我给定的选题，选择口播或无口播路线，按实际断点制作或复核，分开AI自检与人工确认。"
+policy:
+  allow_implicit_invocation: true

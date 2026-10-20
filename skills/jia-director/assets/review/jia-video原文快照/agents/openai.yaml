@@ -1,0 +1,6 @@
+interface:
+  display_name: "Jia-video"
+  short_description: "口播与无口播两条视频路线，分别组织剪辑、镜头制作和审片"
+  default_prompt: "使用 $jia-video，先按成片主线选择口播或无口播路线；有参考片时接收 video-recreation 拆解，优先复用素材，交付可修改工程、审片视频及来源记录。"
+policy:
+  allow_implicit_invocation: true
