@@ -1,3 +1,11 @@
+## 安全修订 · 2026-10-21
+
+当前分发的锁文件已应用 GHSA-68fv-2mgg-jv7q 修复：`source-map-js` 从1.2.1更新至1.2.2。它是PostCSS的间接依赖；Remotion、React、场景代码与渲染脚本未改。下文“原字节”描述最初导入状态，锁文件已由本段明确修订。来源清单保留原锁文件的upstreamSha256，并记录当前哈希与localPatches。历史快照携带的可安装模板也应用同一补丁；未删除历史资料。
+
+[GitHub安全公告](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)。已有工程须在自己的模板目录更新依赖并复核，更新Skill不会自动重写项目的node_modules。
+
+---
+
 # LiveCanvas 模板来源
 
 本目录的 data、package/lock、render、tsconfig 和 src 文件复制自 `pengchujin/livecanvas` 提交 `d75df0a90a295fc7cf634e7775df47a323ad0bea` 的 `livecanvas/assets/remotion`，原代码未改。Copyright © 2026 pengchujin；完整 [MIT许可](LICENSE.txt) 随包保留。

@@ -46,7 +46,9 @@
         {
           "path": "assets/livecanvas-remotion/package-lock.json",
           "bytes": 141244,
-          "sha256": "46abd6f5148b193d9456fc14dd2631a049ab57415334a74f9ea21b8a32f16afd"
+          "sha256": "e0788f6f573243d8b2876dc180209586c3d52a37218c05511f6d3603c13739f2",
+          "upstreamSha256": "46abd6f5148b193d9456fc14dd2631a049ab57415334a74f9ea21b8a32f16afd",
+          "upstreamBytes": 141244
         },
         {
           "path": "assets/livecanvas-remotion/package.json",
@@ -72,6 +74,15 @@
           "path": "assets/livecanvas-remotion/tsconfig.json",
           "bytes": 242,
           "sha256": "9b401926c31b9c4ac888a46ed6cac055bed77a4fa70a4c8972310eecd277169f"
+        }
+      ],
+      "localPatches": [
+        {
+          "date": "2026-10-21",
+          "advisory": "GHSA-68fv-2mgg-jv7q",
+          "path": "assets/livecanvas-remotion/package-lock.json",
+          "change": "source-map-js 1.2.1 -> 1.2.2; only this transitive package resolution changed; original upstream hash retained",
+          "scope": "dependency lock only; upstream render/scene/package source unchanged"
         }
       ]
     },

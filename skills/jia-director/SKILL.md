@@ -2,7 +2,7 @@
 name: jia-director
 description: 王杰的视频导演系统。承接已给选题、参考片或现有工程，组织真人口播精剪、素材动效剪辑、原创动画和参考复现，完成分镜、逐镜制作、合成、实片审核与返修；流程研究只交方案。
 metadata:
-  version: "2.0.1"
+  version: "2.0.2"
   display_name: "导演系统"
   source_module: "jia-video@3.1.1"
 ---
