@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>口播审片 · Jia Video</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/stages.css"></head>
+<body>
+  <header class="topbar"><a class="brand" href="/"><span class="brand-mark">J.</span><span>VIDEO <small>口播审片</small></span></a><div class="project-name" id="projectName">正在载入工程</div><div class="save-group"><span id="saveStatus" role="status">读取中</span><button id="undo" class="quiet" title="Ctrl+Z">撤销</button><button id="save">保存修改</button><button id="export" class="primary">导出粗剪 <span>↗</span></button></div></header>
+  <nav class="workflow" aria-label="制作阶段"><button class="step active" data-stage="rough"><b>01</b> 粗剪审片</button><i></i><button class="step" data-stage="fine"><b>02</b> 精剪切点</button><i></i><button class="step" data-stage="visual"><b>03</b> 补图与动效</button><div class="workflow-note">原声保留 · 本地处理</div></nav>
+  <main id="roughPage">
+    <section class="transcript-pane">
+      <div class="pane-head"><div><span class="eyebrow">TRANSCRIPT</span><h1>从内容里剪。</h1></div><div class="counts"><b id="unitCount">—</b><span>词组</span><b id="suggestionCount">—</b><span>建议</span></div></div>
+      <div class="tab-row"><button class="tab active" data-tab="transcript">逐词审片</button><button class="tab" data-tab="suggestions">剪辑建议 <span id="pendingBadge">0</span></button><button class="tab" data-tab="script">参考脚本</button><label class="search"><span>⌕</span><input id="search" type="search" placeholder="查找台词" aria-label="查找台词"></label></div>
+      <div id="transcript" class="scroll-pane"></div><div id="suggestions" class="scroll-pane" hidden></div><div id="script" class="scroll-pane script-view" hidden></div>
+      <div class="transcript-footer"><span><i class="dot amber"></i> 低置信度或合并时码，需核查</span><span>点击选词 · Shift 连选 · 双击定位 · Delete 删除</span></div>
+    </section>
+    <section class="monitor-pane">
+      <div class="monitor-head"><span class="eyebrow">PREVIEW</span><div class="switch"><button id="originalMode">原片</button><button id="roughMode" class="selected">粗剪预览</button></div></div>
+      <div class="monitor"><video id="video" src="/media" preload="metadata" playsinline></video><div id="previewCaption" class="preview-caption"></div></div>
+      <div class="transport"><button id="play" class="play-button" aria-label="播放暂停">▶</button><div class="timecode"><b id="outputTime">00:00.00</b><span id="sourceTime">原片 00:00.00</span></div><label class="rate"><select id="rate" aria-label="播放速度"><option value="1">1.0×</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option></select></label><button id="audition" class="quiet">听切点</button></div>
+      <div class="preview-note" id="previewNote">即时预览按原片跳转；精确切点以导出的 MP4 为准。</div>
+      <div class="inspector scroll-pane">
+        <div class="inspector-title"><span class="eyebrow">SELECTION</span><span id="selectionLabel">选词或拖选波形，检查前后语境</span></div>
+        <div class="range-inputs"><label>原片起点 <input id="rangeStart" type="number" step="0.01" min="0" aria-label="原片删除起点"></label><span>→</span><label>原片终点 <input id="rangeEnd" type="number" step="0.01" min="0" aria-label="原片删除终点"></label><button id="cutSelection" class="danger-outline">删除这段</button></div>
+        <div class="correction"><label for="wordCorrection">校字 <span>只改文字，保留录音与时码</span></label><div><input id="wordCorrection" placeholder="选择一个词组后校正" disabled><button id="correctWord" disabled>应用</button></div></div>
+        <div class="section-label">已删除片段 <span id="cutCount">0</span></div><div id="cuts" class="cut-list"></div>
+        <details id="captionsDetails"><summary>字幕校对 <span id="captionWarning">0 个待核查</span></summary><div id="captions"></div></details>
+        <details><summary>导出与精剪交接 <span id="exportCount">0</span></summary><div id="exports"></div></details>
+      </div>
+    </section>
+  </main>
+  <footer class="timeline-pane" id="roughTimeline"><div class="timeline-head"><span class="eyebrow">SOURCE WAVEFORM</span><span id="durationStats">—</span><label>缩放 <input id="zoom" type="range" min="1" max="12" step="1" value="1" aria-label="波形缩放"></label></div><div class="wave-wrapper"><canvas id="waveform" aria-label="原片波形，点击定位，Shift拖动选段"></canvas></div><input id="pan" type="range" min="0" max="1000" step="1" value="0" aria-label="波形水平移动"><div class="timeline-legend"><span><i class="key mint"></i>保留</span><span><i class="key red"></i>删除</span><span>点击定位 · Shift 拖动选段 · 滚轮缩放</span></div></footer>
+  <main id="finePage" class="stage-page" hidden>
+    <section class="stage-editor"><div class="pane-head"><div><span class="eyebrow">FRAME REFINEMENT</span><h1>听顺每一个切点。</h1></div></div>
+      <div class="stage-source"><label>选择固定粗剪版本 <select id="fineSource"></select></label><button id="fineBind">载入精剪</button></div>
+      <p id="fineBinding" class="stage-note">先导出粗剪，再选择版本。</p><p class="stage-note">帧区间左闭右开。保留自然呼吸与字头字尾；整句删除、恢复粗剪内容请回第 01 步。</p>
+      <div id="fineClips" class="stage-scroll"></div>
+      <div class="stage-actions"><button id="fineSplit">在播放位置添加切点</button><button id="fineReset">恢复本轮精剪前切点</button></div>
+      <div class="stage-actions"><button id="fineSave">保存切点</button><button id="fineExport" class="primary">导出精剪 MP4</button><span id="fineStatus" role="status"></span></div>
+    </section>
+    <section class="stage-monitor"><span class="eyebrow">JOIN REVIEW</span><div class="stage-screen"><video id="fineVideo" controls preload="metadata" playsinline></video><div id="fineCaption" class="preview-caption"></div></div>
+      <div class="stage-actions"><button id="fineMode" class="selected">精剪预览</button><button id="fineOriginal">完整粗剪</button><button id="finePrevious">← 1 帧</button><button id="fineNext">1 帧 →</button><output id="fineTime">0 帧</output></div>
+      <p class="stage-note">即时预览在粗剪片中跳转。听感及精确成片请播放实际导出的 MP4。</p>
+      <div id="fineOutputs" class="stage-outputs"></div>
+    </section>
+  </main>
+  <main id="visualPage" class="stage-page" hidden>
+    <section class="stage-editor"><div class="pane-head"><div><span class="eyebrow">VISUAL COVERAGE</span><h1>在需要的地方，补一镜。</h1></div></div>
+      <div class="stage-source"><label>选择固定精剪版本 <select id="visualSource"></select></label><button id="visualBind">载入补图</button></div>
+      <p id="visualBinding" class="stage-note">先导出精剪，再选择版本。</p>
+      <details class="stage-details" open><summary>按台词选择补图位置</summary><p class="stage-note">关系、态度、情绪和结论优先保留人物；证据、过程可用素材；抽象结构用动效。点击台词创建条目，默认右下角显示，请检查人物和字幕遮挡。</p><div id="visualCues" class="cue-list"></div></details>
+      <div id="visualItems" class="stage-scroll"></div>
+      <div class="stage-actions"><button id="visualSave">保存补图</button><label><input id="burnSubtitles" type="checkbox" checked> 最终合成字幕</label><button id="visualExport" class="primary">导出补图成片</button></div>
+      <span id="visualStatus" role="status"></span>
+    </section>
+    <section class="stage-monitor"><span class="eyebrow">FINE TIMELINE · ORIGINAL AUDIO</span><div class="stage-screen" id="visualScreen"><video id="visualVideo" controls preload="metadata" playsinline></video><div id="visualLayers"></div><div id="visualCaption" class="preview-caption"></div></div>
+      <p class="stage-note">素材音轨关闭，沿用口播原声。生成素材需要 Codex 执行任务；本地动效按钮可直接制作关系传递示例。</p>
+      <details class="stage-details" open><summary>本地素材与代码动效</summary><div class="stage-source"><input id="assetPath" placeholder="粘贴本地 PNG / JPG / WebP / MP4 路径" aria-label="本地素材路径"><button id="assetImport">导入素材</button></div><div class="stage-source"><input id="motionLeft" value="来源" aria-label="左侧对象"><span>→</span><input id="motionRight" value="接收方" aria-label="右侧对象"><button id="motionCreate">制作 4 秒关系动效</button></div><div id="assetList" class="asset-list"></div></details>
+      <details class="stage-details" id="taskDetails"><summary>交给 Codex 制作缺少的素材</summary><button id="taskCreate">保存补图制作任务</button><pre id="taskResult"></pre><div class="stage-source"><input id="resultsPath" placeholder="完成后粘贴 results.json 本地路径" aria-label="制作结果路径"><button id="resultsImport">登记制作结果</button><button id="stageRefresh">刷新</button></div></details>
+      <div id="visualOutputs" class="stage-outputs"></div>
+    </section>
+  </main>
+  <div id="message" role="status" aria-live="polite"></div><script type="module" src="/app.mjs"></script>
+</body></html>

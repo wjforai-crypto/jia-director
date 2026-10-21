@@ -1,0 +1,43 @@
+{
+  "grammar": "y1_kurzgesagt",
+  "duration": 4,
+  "fps": 30,
+  "width": 960,
+  "height": 540,
+  "theme": "navy",
+  "data": {
+    "center": "一滴海水"
+  },
+  "cues": [
+    {
+      "at": 0.15,
+      "kind": "point",
+      "text": "浮游生物"
+    },
+    {
+      "at": 0.65,
+      "kind": "enter",
+      "text": "一只硅藻",
+      "data": {
+        "index": 0
+      }
+    },
+    {
+      "at": 1.65,
+      "kind": "point",
+      "text": "硅质外壳"
+    },
+    {
+      "at": 2.15,
+      "kind": "point",
+      "text": "叶绿体"
+    },
+    {
+      "at": 2.8,
+      "kind": "highlight",
+      "data": {
+        "index": 1
+      }
+    }
+  ]
+}

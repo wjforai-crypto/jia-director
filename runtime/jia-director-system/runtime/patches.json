@@ -1,0 +1,77 @@
+{
+  "sourceCommit": "8a0d7d72ca65fcce6f8ba82c4a6c8dfe35b8422c",
+  "patches": [
+    {
+      "file": "engine/render.py",
+      "before": "1519ab458d4f0461c3ea028a6d8c8d632a69a6e4cf517f291abbc008ec3056b6",
+      "after": "48295aecfe159ec1b1a78d940ab98fe225af01746e3fc1176158b9276a532448",
+      "reason": "Windows configured Chromium; explicit UTF-8 input"
+    },
+    {
+      "file": "qa.py",
+      "before": "b243900f0b91c246a297b81509b801c35b2b83c6f9a62b7adb68e3b217c34ee0",
+      "after": "b792134c1c81000821e282776891d19f034cac5924f84ec97b0ab604de250ab1",
+      "reason": "Windows configured Chromium; explicit UTF-8 input"
+    },
+    {
+      "file": "engine/clip.html",
+      "before": "15b9ab6f7e3e29dddf8a0f8a181239f94f60c7b1c2e3defc05bdd57f0705dfd3",
+      "after": "c001dbd01d9f0323d7e18c763f8726bf8de5019567e70fba1b2faf2ce898af40",
+      "reason": "Explicit empty local favicon avoids spurious 404; actual missing assets still fail"
+    },
+    {
+      "file": "engine/index.html",
+      "before": "28a067428f79e16b9f108f296e58b4e7541e466d463c4abbe6de6be4ef90a2d1",
+      "after": "6f948525cc96bf760cda389a0e083bc0910e736417d21525c83b39b552000bd3",
+      "reason": "Explicit empty local favicon avoids spurious 404; actual missing assets still fail"
+    },
+    {
+      "file": "engine/render.py",
+      "before": "48295aecfe159ec1b1a78d940ab98fe225af01746e3fc1176158b9276a532448",
+      "after": "2167df93a463824003e35283d79c21444f020d1c5985878b0ceed750047fbb48",
+      "reason": "Reuse local HTTP connections to prevent repeated font-load socket exhaustion in batch jobs"
+    },
+    {
+      "file": "qa.py",
+      "before": "b792134c1c81000821e282776891d19f034cac5924f84ec97b0ab604de250ab1",
+      "after": "2505969fa6ef8ac226631f0489d3fa0a6c7de9df81a1a485a51785645b431ea0",
+      "reason": "Reuse local HTTP connections to prevent repeated font-load socket exhaustion in batch jobs"
+    },
+    {
+      "file": "engine/clip.js",
+      "before": "4be7a02d636b1e6ebf864822fec54c8e925ce415be2e2f1be1098ffb7a7b8799",
+      "after": "457b2e9b006dbaf380c4dc4e644db313fa0132b02e831197d48b00fcb716bc9f",
+      "reason": "Load registered grammar fonts and actual fallback families instead of every art-history font"
+    },
+    {
+      "file": "engine/clip.js",
+      "before": "457b2e9b006dbaf380c4dc4e644db313fa0132b02e831197d48b00fcb716bc9f",
+      "after": "f031dc20c1d854c58a1ebff1b710c65681016e7a5c9a1de7bea792e1b982fb94",
+      "reason": "Check glyph coverage for the same fonts actually used by this grammar"
+    },
+    {
+      "file": "engine/clip.js",
+      "before": "f031dc20c1d854c58a1ebff1b710c65681016e7a5c9a1de7bea792e1b982fb94",
+      "after": "6c3a92f16191ed031b387ce82543defb80a8e39d17b3711fa1a5509e9dfca61e",
+      "reason": "Fail on missing CJK glyphs instead of silently using machine-dependent system fallback"
+    },
+    {
+      "file": "engine/clip.html",
+      "before": "c001dbd01d9f0323d7e18c763f8726bf8de5019567e70fba1b2faf2ce898af40",
+      "after": "1c3df20e472be9ce1c71e649fe702ec76097ac3152dd543f91bd82ea16a3b065",
+      "reason": "Prevent Chromium readback-triggered GPU to CPU Canvas raster switching; strict identical-time pixels without tolerance"
+    },
+    {
+      "file": "engine/index.html",
+      "before": "6f948525cc96bf760cda389a0e083bc0910e736417d21525c83b39b552000bd3",
+      "after": "8bcef9516c24cd1c8c8c747e60160ac266396e1a31f9a0364591b040a2716994",
+      "reason": "Prevent Chromium readback-triggered GPU to CPU Canvas raster switching; strict identical-time pixels without tolerance"
+    },
+    {
+      "file": "engine/clips/t1_3b1b.js",
+      "before": "84ed102301a066410aca1b0d06ba0459f7d5da09ae4831edf58a27f2152a6e7a",
+      "after": "78adb0ad33fba5fa0313f2172bcb4ff0610240fbb4d3f9d1e3382d2210c2987c",
+      "reason": "Present readable mathematical axes immediately so curve reveal starts on a concrete coordinate system, without a nearly empty half-second"
+    }
+  ]
+}

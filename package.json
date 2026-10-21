@@ -1,0 +1,17 @@
+{
+  "name": "jia-director-public-runtime",
+  "version": "2.0.2-runtime.1",
+  "private": true,
+  "type": "module",
+  "description": "Portable local execution dependencies for Jia Director; no paid video API.",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "playwright": "1.60.0"
+  },
+  "scripts": {
+    "test:source": "node --test runtime/video-workspace/runtime/source-film/source-film.test.mjs",
+    "test:cut": "node --test runtime/video-workspace/scripts/tests/rough-review.test.mjs runtime/video-workspace/scripts/tests/fine-cut.test.mjs"
+  }
+}

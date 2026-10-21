@@ -1,0 +1,12 @@
+{
+  "name": "jia-visual-lab-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pinned optional visual backends; no global install or Skill deployment.",
+  "dependencies": {
+    "three": "0.181.2",
+    "p5": "2.2.3",
+    "p5.brush": "2.2.3"
+  }
+}

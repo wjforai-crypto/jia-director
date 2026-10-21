@@ -1,0 +1,39 @@
+name: Public runtime smoke
+on:
+  workflow_dispatch:
+  push:
+    paths: ['runtime/**', 'scripts/**', 'examples/**', 'requirements.txt', 'package*.json', '.github/workflows/runtime-smoke.yml']
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install FFmpeg
+        run: choco install ffmpeg --no-progress -y
+      - name: Install and configure
+        shell: pwsh
+        run: ./scripts/setup.ps1
+      - name: Verify distributed sources and TTS exclusions
+        shell: pwsh
+        run: ./.venv/Scripts/python.exe scripts/verify-public-package.py
+      - name: Director contract tests
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = Join-Path $pwd 'runtime/jia-director-system'
+          ./.venv/Scripts/python.exe -m unittest discover -s runtime/jia-director-system/tests -v
+      - name: Source-film tests
+        run: npm run test:source
+      - name: Editing-contract core tests
+        working-directory: runtime/video-production-workflow
+        run: npm test
+      - name: ASR without TTS dependencies
+        run: node --test runtime/video-workspace/scripts/tests/local-asr.test.mjs
+      - name: Real exports
+        shell: pwsh
+        run: ./scripts/smoke.ps1

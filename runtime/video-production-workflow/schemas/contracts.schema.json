@@ -1,0 +1,1403 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wangjie.local/video-flow/contracts/1.0.0",
+  "title": "Video Flow 1.0.0 contracts",
+  "$defs": {
+    "project": {
+      "type": "object",
+      "required": ["schemaVersion", "projectId", "title", "lane", "priority", "platform", "aspectRatio", "workflowStatus", "privacy", "source", "artifacts"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "projectId": { "type": "string", "pattern": "^vf_[a-f0-9]{16}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "lane": { "enum": ["speech", "product-demo", "hybrid"] },
+        "priority": { "enum": ["standard", "flagship"] },
+        "platform": { "type": "string", "minLength": 1 },
+        "aspectRatio": { "type": "string", "minLength": 1 },
+        "workflowStatus": {
+          "enum": [
+            "intake",
+            "source_registered",
+            "plan_ready",
+            "visual_direction_ready",
+            "draft1_pending_user",
+            "draft1_approved",
+            "revision_in_progress",
+            "internal_review_passed",
+            "draft2_pending_user",
+            "final_confirmed",
+            "archived"
+          ]
+        },
+        "privacy": {
+          "type": "object",
+          "required": ["classification", "containsSensitiveData", "redacted", "cloudAllowed"],
+          "properties": {
+            "classification": { "enum": ["public", "internal", "sensitive"] },
+            "containsSensitiveData": { "type": "boolean" },
+            "redacted": { "type": "boolean" },
+            "cloudAllowed": { "type": "boolean" },
+            "externalProcessingAuthorization": {
+              "type": "object",
+              "required": ["status", "authorizedBy", "scope", "verifiedBy", "verifiedAt", "redactionEvidence"],
+              "properties": {
+                "status": { "enum": ["not_required", "pending", "authorized", "denied"] },
+                "authorizedBy": { "type": ["string", "null"] },
+                "scope": { "type": "array", "items": { "type": "string" } },
+                "verifiedBy": { "type": ["string", "null"] },
+                "verifiedAt": { "type": ["string", "null"] },
+                "redactionEvidence": {
+                  "anyOf": [
+                    { "type": "null" },
+                    {
+                      "type": "object",
+                      "required": ["performedBy", "reviewedBy", "sourceAssetId", "sourcePath", "sourceSha256", "approvedOutputs", "reviewedAt"],
+                      "properties": {
+                        "performedBy": { "type": "string", "minLength": 1 },
+                        "reviewedBy": { "type": "string", "minLength": 1 },
+                        "sourceAssetId": { "type": "string", "minLength": 1 },
+                        "sourcePath": { "type": "string", "minLength": 1 },
+                        "sourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                        "approvedOutputs": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "type": "object",
+                            "required": ["kind", "path", "sha256"],
+                            "properties": {
+                              "kind": { "enum": ["frame", "edit_plan", "proxy"] },
+                              "path": { "type": "string", "minLength": 1 },
+                              "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                            }
+                          }
+                        },
+                        "reviewedAt": { "type": "string", "minLength": 1 }
+                      }
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "classification": { "const": "sensitive" } },
+                "required": ["classification"]
+              },
+              "then": {
+                "properties": { "containsSensitiveData": { "const": true } }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "externalProcessingAuthorization": {
+                    "properties": { "status": { "const": "authorized" } },
+                    "required": ["status"]
+                  }
+                },
+                "required": ["externalProcessingAuthorization"]
+              },
+              "then": {
+                "properties": {
+                  "externalProcessingAuthorization": {
+                    "properties": {
+                      "authorizedBy": { "type": "string", "minLength": 1 },
+                      "scope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+                      "verifiedBy": { "type": "string", "minLength": 1 },
+                      "verifiedAt": { "type": "string", "minLength": 1 }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "source": {
+          "type": "object",
+          "required": ["path"],
+          "properties": { "path": { "type": "string" } }
+        },
+        "artifacts": {
+          "type": "object",
+          "properties": {
+            "brollHandoffs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "assets": {
+      "type": "object",
+      "required": ["schemaVersion", "assets"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "assets": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "transcript": {
+      "type": "object",
+      "required": ["schemaVersion", "segments", "words"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "segments": { "type": "array" },
+        "words": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "cutPlan": {
+      "type": "object",
+      "required": ["schemaVersion", "operations", "reviewStatus"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "operations": { "type": "array" },
+        "reviewStatus": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "editPlan": {
+      "type": "object",
+      "required": ["schemaVersion", "shots", "reviewStatus"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "shots": { "type": "array" },
+        "reviewStatus": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "visualRouting": {
+      "type": "object",
+      "required": ["schemaVersion", "score", "threshold", "decision", "selectedShotIds", "callsUsed", "maxCalls", "privacyBlocked"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "score": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["critical", "abstract", "information", "brand", "assetGap", "total"],
+              "properties": {
+                "critical": { "type": "integer", "minimum": 0, "maximum": 2 },
+                "abstract": { "type": "integer", "minimum": 0, "maximum": 2 },
+                "information": { "type": "integer", "minimum": 0, "maximum": 2 },
+                "brand": { "type": "integer", "minimum": 0, "maximum": 2 },
+                "assetGap": { "type": "integer", "minimum": 0, "maximum": 2 },
+                "total": { "type": "integer", "minimum": 0, "maximum": 10 }
+              }
+            }
+          ]
+        },
+        "threshold": { "const": 6 },
+        "decision": { "enum": ["not_scored", "codex", "kimi_advice_required", "blocked_sensitive"] },
+        "selectedShotIds": { "type": "array", "items": { "type": "string" } },
+        "callsUsed": { "type": "integer", "minimum": 0 },
+        "maxCalls": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "privacyBlocked": { "type": "boolean" },
+        "privacyBlockReasons": { "type": "array", "items": { "type": "string" } },
+        "privacyHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": true
+    },
+    "kimiVisualDirection": {
+      "type": "object",
+      "required": ["schemaVersion", "status", "suggestions", "decisions"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "status": { "enum": ["not_requested", "prepared", "received", "accepted", "partially_accepted", "rejected", "stale", "fallback_codex_pending", "fallback_codex_completed"] },
+        "suggestions": { "type": "array" },
+        "decisions": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "review": {
+      "type": "object",
+      "required": ["schemaVersion", "versions", "confirmations"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "versions": { "type": "array" },
+        "confirmations": { "type": "array" },
+        "internalReviews": { "type": "array" },
+        "dependencyInvalidations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dependency", "planContentHash", "reviewer", "invalidatedAt", "reason"],
+            "properties": {
+              "dependency": { "const": "recreation-plan.json" },
+              "planContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviewer": { "type": "string", "minLength": 1 },
+              "invalidatedAt": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "archiveManifest": {
+      "type": "object",
+      "required": ["schemaVersion", "status", "requiredGroups", "entries"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "status": { "enum": ["pending", "valid", "invalid", "archived"] },
+        "requiredGroups": { "type": "array", "items": { "type": "string" } },
+        "entries": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "referenceAnalysis": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "kind",
+        "status",
+        "source",
+        "referenceVerbatimTranscript",
+        "shots",
+        "editGrammar",
+        "transferablePatterns",
+        "protectedElements",
+        "inputHash",
+        "contentHash",
+        "approvedContentHash",
+        "reviews"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "kind": { "const": "reference-video-analysis" },
+        "status": { "enum": ["needs_review", "approved", "needs_revision", "stale"] },
+        "source": {
+          "type": "object",
+          "required": ["assetId", "path", "sha256", "assetEvidenceHash", "provenance", "rightsStatus", "intendedUse", "rightsNotes", "acquisition", "privacyClassification"],
+          "properties": {
+            "assetId": { "type": "string", "pattern": "^asset_[a-f0-9]{16}$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "assetEvidenceHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "sourceUrl": { "type": ["string", "null"] },
+            "provenance": { "type": "string", "minLength": 1 },
+            "rightsStatus": { "type": "string", "minLength": 1 },
+            "intendedUse": { "enum": ["analysis_only", "analysis_and_original_recreation", "authorized_close_recreation"] },
+            "rightsNotes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "privacyClassification": { "enum": ["public", "internal", "sensitive"] },
+            "acquisition": {
+              "type": "object",
+              "required": ["method", "tool", "retrievedAt"],
+              "properties": {
+                "method": { "enum": ["user_provided", "approved_downloader", "local_capture"] },
+                "tool": { "type": "string", "minLength": 1 },
+                "retrievedAt": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "referenceVerbatimTranscript": {
+          "type": "object",
+          "required": ["language", "reviewStatus", "fullText", "segments", "words"],
+          "properties": {
+            "language": { "type": "string", "minLength": 1 },
+            "reviewStatus": { "enum": ["asr_unreviewed", "asr_corrected", "human_verified"] },
+            "fullText": { "type": "string", "minLength": 1 },
+            "segments": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["id", "start", "end", "text"],
+                "properties": {
+                  "id": { "type": "string", "pattern": "^rseg_[a-f0-9]{20}$" },
+                  "start": { "type": "number", "minimum": 0 },
+                  "end": { "type": "number", "exclusiveMinimum": 0 },
+                  "text": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": true
+              }
+            },
+            "words": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["id", "start", "end", "text"],
+                "properties": {
+                  "id": { "type": "string", "pattern": "^rword_[a-f0-9]{20}$" },
+                  "start": { "type": "number", "minimum": 0 },
+                  "end": { "type": "number", "exclusiveMinimum": 0 },
+                  "text": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "shots": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "slug", "sourceIn", "sourceOut", "shotSize", "composition", "cameraPosition", "cameraMovement", "subjectAction", "visualFunction", "transitionIn", "transitionOut", "audio", "confidence"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^rshot_[a-f0-9]{20}$" },
+              "slug": { "type": "string", "minLength": 1 },
+              "sourceIn": { "type": "number", "minimum": 0 },
+              "sourceOut": { "type": "number", "exclusiveMinimum": 0 },
+              "shotSize": { "type": "string", "minLength": 1 },
+              "composition": { "type": "string", "minLength": 1 },
+              "cameraPosition": { "type": "string", "minLength": 1 },
+              "cameraMovement": { "type": "string", "minLength": 1 },
+              "subjectAction": { "type": "string", "minLength": 1 },
+              "visualFunction": { "type": "string", "minLength": 1 },
+              "transitionIn": { "type": "string", "minLength": 1 },
+              "transitionOut": { "type": "string", "minLength": 1 },
+              "audio": {
+                "type": "object",
+                "required": ["dialogue", "sfx", "musicCue"],
+                "properties": {
+                  "dialogue": { "type": "string", "minLength": 1 },
+                  "sfx": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+                  "musicCue": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": false
+              },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "additionalProperties": true
+          }
+        },
+        "editGrammar": {
+          "type": "object",
+          "required": ["hook", "structure", "pacing", "captions", "transitions", "broll", "motionGraphics", "soundDesign", "music"],
+          "properties": {
+            "hook": { "type": "string", "minLength": 1 },
+            "structure": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "pacing": { "type": "string", "minLength": 1 },
+            "captions": { "type": "string", "minLength": 1 },
+            "transitions": { "type": "string", "minLength": 1 },
+            "broll": { "type": "string", "minLength": 1 },
+            "motionGraphics": { "type": "string", "minLength": 1 },
+            "soundDesign": { "type": "string", "minLength": 1 },
+            "music": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "transferablePatterns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "evidence", "adaptation"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "adaptation": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "protectedElements": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "unknowns": { "type": "array", "items": { "type": "string" } },
+        "inputHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "approvedContentHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["decision", "reviewer", "authority", "contentHash", "sourceSha256", "reviewArtifactSha256", "reviewedAt"],
+            "properties": {
+              "decision": { "enum": ["approve", "revise"] },
+              "reviewer": { "type": "string", "minLength": 1 },
+              "authority": { "enum": ["user", "operator"] },
+              "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "sourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviewArtifactSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviewedAt": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "approved" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approvedContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviews": { "minItems": 1 }
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "recreationPlan": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "kind",
+        "status",
+        "referenceAnalysisContentHash",
+        "referenceAssetHash",
+        "briefHash",
+        "brief",
+        "adaptationPolicy",
+        "creativeOptions",
+        "selectedOptionSlug",
+        "scriptOutline",
+        "targetVerbatimScript",
+        "shootingPlan",
+        "editBlueprint",
+        "inputHash",
+        "contentHash",
+        "approvedContentHash",
+        "reviews",
+        "applications"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "kind": { "const": "reference-video-recreation-plan" },
+        "status": { "enum": ["pending_user_review", "approved", "needs_revision", "stale", "applied"] },
+        "referenceAnalysisContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "referenceAssetHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "briefHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "brief": {
+          "type": "object",
+          "required": ["audience", "objective", "platform", "aspectRatio", "durationSeconds", "tone", "facts", "brandRules"],
+          "properties": {
+            "audience": { "type": "string", "minLength": 1 },
+            "objective": { "type": "string", "minLength": 1 },
+            "platform": { "type": "string", "minLength": 1 },
+            "aspectRatio": { "type": "string", "minLength": 1 },
+            "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+            "tone": { "type": "string", "minLength": 1 },
+            "facts": { "type": "array", "minItems": 1 },
+            "brandRules": { "type": "array", "minItems": 1 }
+          },
+          "additionalProperties": true
+        },
+        "adaptationPolicy": {
+          "type": "object",
+          "required": ["mode", "borrowedMechanisms", "mustReplace", "replacementMap", "authorizationEvidence"],
+          "properties": {
+            "mode": { "enum": ["mechanism_only", "structure_recreation", "authorized_close_recreation"] },
+            "borrowedMechanisms": { "type": "array", "minItems": 1 },
+            "mustReplace": { "type": "array", "minItems": 1 },
+            "replacementMap": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["sourceElement", "action", "replacement", "verification", "targetPaths", "replacementAnchors"],
+                "properties": {
+                  "sourceElement": { "type": "string", "minLength": 1 },
+                  "action": { "enum": ["replace", "licensed_reuse"] },
+                  "replacement": { "type": "string", "minLength": 1 },
+                  "verification": { "type": "string", "minLength": 1 },
+                  "targetPaths": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "type": "string", "pattern": "^/(brief|scriptOutline|targetVerbatimScript|shootingPlan|editBlueprint)(/.*)?$" }
+                  },
+                  "replacementAnchors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "type": "string", "minLength": 3 }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "authorizationEvidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["path", "sha256", "referenceAssetSha256", "authorizedBy", "rightsHolder", "authorizedElements", "verifiedBy", "verifiedAt", "scope"],
+                "properties": {
+                  "path": { "type": "string", "minLength": 1 },
+                  "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "referenceAssetSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "authorizedBy": { "type": "string", "minLength": 1 },
+                  "rightsHolder": { "type": "string", "minLength": 1 },
+                  "authorizedElements": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+                  "verifiedBy": { "type": "string", "minLength": 1 },
+                  "verifiedAt": { "type": "string", "format": "date-time" },
+                  "scope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "creativeOptions": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["slug", "name", "coreIdea", "referenceUse", "visualApproach", "productionCost", "risk", "fit"],
+            "properties": {
+              "slug": { "type": "string", "minLength": 1 },
+              "name": { "type": "string", "minLength": 1 },
+              "coreIdea": { "type": "string", "minLength": 1 },
+              "referenceUse": { "type": "string", "minLength": 1 },
+              "visualApproach": { "type": "string", "minLength": 1 },
+              "productionCost": { "type": "string", "minLength": 1 },
+              "risk": { "type": "string", "minLength": 1 },
+              "fit": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "selectedOptionSlug": { "type": "string", "minLength": 1 },
+        "scriptOutline": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["slug", "purpose", "referenceMechanism", "targetMessage"],
+            "properties": {
+              "slug": { "type": "string", "minLength": 1 },
+              "purpose": { "type": "string", "minLength": 1 },
+              "referenceMechanism": { "type": "string", "minLength": 1 },
+              "targetMessage": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "targetVerbatimScript": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "slug", "sectionSlug", "text", "purpose", "delivery"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^tline_[a-f0-9]{20}$" },
+              "slug": { "type": "string", "minLength": 1 },
+              "sectionSlug": { "type": "string", "minLength": 1 },
+              "text": { "type": "string", "minLength": 1 },
+              "purpose": { "type": "string", "minLength": 1 },
+              "delivery": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": true
+          }
+        },
+        "shootingPlan": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "slug", "timelineIn", "timelineOut", "lineIds", "referenceShotIds", "scene", "framing", "composition", "cameraPosition", "cameraMovement", "subjectAction", "performance", "props", "lighting", "audioCapture", "continuity"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^tshot_[a-f0-9]{20}$" },
+              "timelineIn": { "type": "number", "minimum": 0 },
+              "timelineOut": { "type": "number", "exclusiveMinimum": 0 },
+              "lineIds": { "type": "array", "minItems": 1 },
+              "referenceShotIds": { "type": "array" },
+              "slug": { "type": "string", "minLength": 1 },
+              "scene": { "type": "string", "minLength": 1 },
+              "framing": { "type": "string", "minLength": 1 },
+              "composition": { "type": "string", "minLength": 1 },
+              "cameraPosition": { "type": "string", "minLength": 1 },
+              "cameraMovement": { "type": "string", "minLength": 1 },
+              "subjectAction": { "type": "string", "minLength": 1 },
+              "performance": { "type": "string", "minLength": 1 },
+              "props": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "lighting": { "type": "string", "minLength": 1 },
+              "audioCapture": { "type": "string", "minLength": 1 },
+              "continuity": { "type": "string", "minLength": 1 },
+              "alternatives": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            },
+            "additionalProperties": true
+          }
+        },
+        "editBlueprint": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["shootingShotId", "shootingShotSlug", "referenceMechanisms", "cutStrategy", "pacing", "brollSlots", "motionGraphics", "sfx", "music", "transition", "keyFrames", "acceptance"],
+            "properties": {
+              "shootingShotId": { "type": "string", "pattern": "^tshot_[a-f0-9]{20}$" },
+              "brollSlots": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "trigger", "purpose", "visual", "sourceStrategy", "sourcePlan", "generation", "durationSeconds", "reviewBeforeUse"],
+                  "properties": {
+                    "id": { "type": "string", "pattern": "^broll_[a-f0-9]{20}$" },
+                    "trigger": { "type": "string", "minLength": 1 },
+                    "purpose": { "type": "string", "minLength": 1 },
+                    "visual": { "type": "string", "minLength": 1 },
+                    "sourceStrategy": { "enum": ["self_recorded", "licensed_stock", "generated_after_approval"] },
+                    "sourcePlan": {
+                      "type": "object",
+                      "required": ["provenance", "rightsStatus", "licenseEvidencePath", "licenseEvidenceSha256", "assetId", "assetSha256"],
+                      "properties": {
+                        "provenance": { "type": "string", "minLength": 1 },
+                        "rightsStatus": { "enum": ["user_owned", "licensed", "pending_generation"] },
+                        "licenseEvidencePath": { "type": ["string", "null"] },
+                        "licenseEvidenceSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+                        "assetId": { "type": ["string", "null"] },
+                        "assetSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+                      },
+                      "additionalProperties": false
+                    },
+                    "generation": {
+                      "anyOf": [
+                        { "type": "null" },
+                        {
+                          "type": "object",
+                          "required": ["executor", "model", "mode", "prompt", "promptHash", "approvalStatus"],
+                          "properties": {
+                            "executor": { "type": "string", "minLength": 1 },
+                            "model": { "type": "string", "minLength": 1 },
+                            "mode": { "type": "string", "minLength": 1 },
+                            "prompt": { "type": "string", "minLength": 1 },
+                            "promptHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                            "approvalStatus": { "const": "pending_plan_review" }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+                    "reviewBeforeUse": { "const": true }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "shootingShotSlug": { "type": "string", "minLength": 1 },
+              "referenceMechanisms": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "cutStrategy": { "type": "string", "minLength": 1 },
+              "pacing": { "type": "string", "minLength": 1 },
+              "motionGraphics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["trigger", "purpose", "visual", "durationSeconds"],
+                  "properties": {
+                    "trigger": { "type": "string", "minLength": 1 },
+                    "purpose": { "type": "string", "minLength": 1 },
+                    "visual": { "type": "string", "minLength": 1 },
+                    "durationSeconds": { "type": "number", "minimum": 0 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "sfx": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["trigger", "sound", "mix"],
+                  "properties": {
+                    "trigger": { "type": "string", "minLength": 1 },
+                    "sound": { "type": "string", "minLength": 1 },
+                    "mix": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "music": {
+                "type": "object",
+                "required": ["cue", "mood", "change"],
+                "properties": {
+                  "cue": { "type": "string", "minLength": 1 },
+                  "mood": { "type": "string", "minLength": 1 },
+                  "change": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": false
+              },
+              "transition": { "type": "string", "minLength": 1 },
+              "keyFrames": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "acceptance": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+            },
+            "additionalProperties": true
+          }
+        },
+        "inputHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "approvedContentHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["decision", "reviewer", "authority", "contentHash", "referenceAnalysisContentHash", "reviewBoardSha256", "teleprompterSha256", "reviewedAt"],
+            "properties": {
+              "decision": { "enum": ["approve", "revise"] },
+              "reviewer": { "type": "string", "minLength": 1 },
+              "authority": { "enum": ["user", "operator"] },
+              "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "referenceAnalysisContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviewBoardSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "teleprompterSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviewedAt": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": true
+          }
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "contentHash",
+              "targetTranscriptHash",
+              "cutPlanHash",
+              "editPlanBeforeHash",
+              "editPlanAfterHash",
+              "referenceBindingsHash",
+              "mappings",
+              "reviewer",
+              "appliedAt"
+            ],
+            "properties": {
+              "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "targetTranscriptHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "cutPlanHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "editPlanBeforeHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "editPlanAfterHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "referenceBindingsHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "mappings": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "required": ["recreationShotId", "editShotId"],
+                  "properties": {
+                    "recreationShotId": { "type": "string", "pattern": "^tshot_[a-f0-9]{20}$" },
+                    "editShotId": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "reviewer": { "type": "string", "minLength": 1 },
+              "appliedAt": { "type": "string", "minLength": 1 },
+              "revokedAt": { "type": "string", "minLength": 1 },
+              "revokedBy": { "type": "string", "minLength": 1 }
+            },
+            "dependentRequired": {
+              "revokedAt": ["revokedBy"],
+              "revokedBy": ["revokedAt"]
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["approved", "applied"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approvedContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "reviews": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "adaptationPolicy": {
+                "properties": { "mode": { "const": "authorized_close_recreation" } },
+                "required": ["mode"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "adaptationPolicy": {
+                "properties": { "authorizationEvidence": { "minItems": 1 } }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "brollHandoff": {
+      "type": "object",
+      "required": ["schemaVersion", "kind", "handoffId", "status", "content", "contentHash", "inputHash", "preparedAt", "approval", "execution"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "kind": { "const": "minimax-broll-handoff" },
+        "handoffId": { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" },
+        "status": { "enum": ["pending_user_approval", "approved", "execution_claimed", "result_pending_user_review", "accepted", "needs_revision", "stale", "superseded"] },
+        "content": {
+          "type": "object",
+          "required": ["project", "plan", "slot", "generation", "revision", "referenceAssets"],
+          "properties": {
+            "project": {
+              "type": "object",
+              "required": ["projectId", "title", "platform", "aspectRatio", "privacyHash"],
+              "properties": {
+                "projectId": { "type": "string", "pattern": "^vf_[a-f0-9]{16}$" },
+                "title": { "type": "string", "minLength": 1 },
+                "platform": { "type": "string", "minLength": 1 },
+                "aspectRatio": { "type": "string", "minLength": 1 },
+                "privacyHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              },
+              "additionalProperties": false
+            },
+            "plan": {
+              "type": "object",
+              "required": ["path", "contentHash", "approvedContentHash", "status"],
+              "properties": {
+                "path": { "const": "recreation-plan.json" },
+                "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "approvedContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "status": { "enum": ["approved", "applied"] }
+              },
+              "additionalProperties": false
+            },
+            "slot": {
+              "type": "object",
+              "required": ["id", "shootingShotId", "shootingShotSlug", "trigger", "purpose", "visual", "sourceStrategy", "durationSeconds"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^broll_[a-f0-9]{20}$" },
+                "shootingShotId": { "type": "string", "pattern": "^tshot_[a-f0-9]{20}$" },
+                "shootingShotSlug": { "type": "string", "minLength": 1 },
+                "trigger": { "type": "string", "minLength": 1 },
+                "purpose": { "type": "string", "minLength": 1 },
+                "visual": { "type": "string", "minLength": 1 },
+                "sourceStrategy": { "const": "generated_after_approval" },
+                "durationSeconds": { "type": "number", "exclusiveMinimum": 0 }
+              },
+              "additionalProperties": false
+            },
+            "generation": {
+              "type": "object",
+              "required": ["executor", "model", "mode", "prompt", "promptHash", "durationSeconds", "aspectRatio", "payloadHash"],
+              "properties": {
+                "executor": { "type": "string", "minLength": 1 },
+                "model": { "type": "string", "minLength": 1 },
+                "mode": { "type": "string", "minLength": 1 },
+                "prompt": { "type": "string", "minLength": 1 },
+                "promptHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+                "aspectRatio": { "type": "string", "minLength": 1 },
+                "payloadHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              },
+              "additionalProperties": false
+            },
+            "revision": {
+              "type": "object",
+              "required": ["sequence", "previousHandoffId", "previousResultContentHash", "previousGenerationPayloadHash", "reason"],
+              "properties": {
+                "sequence": { "type": "integer", "minimum": 0 },
+                "previousHandoffId": {
+                  "anyOf": [
+                    { "type": "null" },
+                    { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" }
+                  ]
+                },
+                "previousResultContentHash": {
+                  "anyOf": [
+                    { "type": "null" },
+                    { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                  ]
+                },
+                "previousGenerationPayloadHash": {
+                  "anyOf": [
+                    { "type": "null" },
+                    { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                  ]
+                },
+                "reason": { "type": ["string", "null"] }
+              },
+              "additionalProperties": false
+            },
+            "referenceAssets": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["assetId", "role", "usage", "path", "sizeBytes", "sha256"],
+                "properties": {
+                  "assetId": { "type": ["string", "null"] },
+                  "role": { "type": "string", "minLength": 1 },
+                  "usage": { "enum": ["evidence_only", "generation_input"] },
+                  "path": { "type": "string", "minLength": 1 },
+                  "sizeBytes": { "type": "integer", "minimum": 0 },
+                  "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "inputHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "preparedAt": { "type": "string", "format": "date-time" },
+        "approval": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["decision", "reviewer", "authority", "slotId", "handoffContentHash", "reviewedHandoffSha256", "approvedAt"],
+              "properties": {
+                "decision": { "const": "approve" },
+                "reviewer": { "type": "string", "minLength": 1 },
+                "authority": { "const": "user" },
+                "slotId": { "type": "string", "minLength": 1 },
+                "handoffContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "reviewedHandoffSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "approvedAt": { "type": "string", "format": "date-time" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "execution": {
+          "type": "object",
+          "required": ["status", "attempts"],
+          "properties": {
+            "status": { "enum": ["not_started", "claimed", "returned"] },
+            "attempts": { "type": "integer", "minimum": 0 },
+            "claim": {
+              "type": "object",
+              "required": ["claimHash", "sequence", "executor", "claimedBy", "handoffContentHash", "planContentHash", "privacyHash", "issuedAt", "expiresAt"],
+              "properties": {
+                "claimHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "sequence": { "type": "integer", "minimum": 1 },
+                "executor": { "type": "string", "minLength": 1 },
+                "claimedBy": { "type": "string", "minLength": 1 },
+                "handoffContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "planContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "privacyHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "issuedAt": { "type": "string", "format": "date-time" },
+                "expiresAt": { "type": "string", "format": "date-time" }
+              },
+              "additionalProperties": false
+            },
+            "reconciledClaims": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["claim", "outcome", "reconciledBy", "authority", "reason", "reconciledAt"],
+                "properties": {
+                  "claim": {
+                    "type": "object",
+                    "required": ["claimHash", "sequence", "executor", "claimedBy", "handoffContentHash", "planContentHash", "privacyHash", "issuedAt", "expiresAt"],
+                    "properties": {
+                      "claimHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                      "sequence": { "type": "integer", "minimum": 1 },
+                      "executor": { "type": "string", "minLength": 1 },
+                      "claimedBy": { "type": "string", "minLength": 1 },
+                      "handoffContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                      "planContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                      "privacyHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                      "issuedAt": { "type": "string", "format": "date-time" },
+                      "expiresAt": { "type": "string", "format": "date-time" }
+                    },
+                    "additionalProperties": false
+                  },
+                  "outcome": { "const": "confirmed_not_submitted" },
+                  "reconciledBy": { "type": "string", "minLength": 1 },
+                  "authority": { "enum": ["user", "operator"] },
+                  "reason": { "type": "string", "minLength": 1 },
+                  "reconciledAt": { "type": "string", "format": "date-time" }
+                },
+                "additionalProperties": false
+              }
+            },
+            "importedAt": { "type": "string", "format": "date-time" }
+          },
+          "additionalProperties": false
+        },
+        "supersession": {
+          "type": "object",
+          "required": ["supersededByHandoffId", "supersededAt", "reason"],
+          "properties": {
+            "supersededByHandoffId": { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" },
+            "supersededAt": { "type": "string", "format": "date-time" },
+            "reason": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "staleEvidence": {
+          "type": "object",
+          "required": ["reason", "invalidatedPlanContentHash", "invalidatedAt"],
+          "properties": {
+            "reason": { "const": "recreation_plan_revised_or_replaced" },
+            "invalidatedPlanContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "invalidatedAt": { "type": "string", "format": "date-time" }
+          },
+          "additionalProperties": false
+        },
+        "resultPath": { "type": "string", "minLength": 1 },
+        "resultContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "pending_user_approval" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approval": { "type": "null" },
+              "execution": {
+                "properties": { "status": { "const": "not_started" }, "attempts": { "const": 0 } },
+                "not": { "anyOf": [{ "required": ["claim"] }, { "required": ["importedAt"] }] }
+              }
+            },
+            "not": { "anyOf": [{ "required": ["resultPath"] }, { "required": ["resultContentHash"] }] }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "approved" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approval": { "type": "object" },
+              "execution": {
+                "properties": { "status": { "const": "not_started" }, "attempts": { "const": 0 } },
+                "not": { "anyOf": [{ "required": ["claim"] }, { "required": ["importedAt"] }] }
+              }
+            },
+            "not": { "anyOf": [{ "required": ["resultPath"] }, { "required": ["resultContentHash"] }] }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "execution_claimed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approval": { "type": "object" },
+              "execution": {
+                "required": ["claim"],
+                "properties": { "status": { "const": "claimed" }, "attempts": { "const": 0 } },
+                "not": { "required": ["importedAt"] }
+              }
+            },
+            "not": { "anyOf": [{ "required": ["resultPath"] }, { "required": ["resultContentHash"] }] }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["result_pending_user_review", "accepted", "needs_revision"] } }, "required": ["status"] },
+          "then": {
+            "required": ["resultPath", "resultContentHash"],
+            "properties": {
+              "approval": { "type": "object" },
+              "execution": {
+                "required": ["claim", "importedAt"],
+                "properties": { "status": { "const": "returned" }, "attempts": { "const": 1 } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "stale" } }, "required": ["status"] },
+          "then": {
+            "required": ["staleEvidence"],
+            "anyOf": [
+              {
+                "properties": {
+                  "execution": {
+                    "properties": { "status": { "const": "not_started" }, "attempts": { "const": 0 } },
+                    "not": { "anyOf": [{ "required": ["claim"] }, { "required": ["importedAt"] }] }
+                  }
+                },
+                "not": { "anyOf": [{ "required": ["resultPath"] }, { "required": ["resultContentHash"] }] }
+              },
+              {
+                "required": ["resultPath", "resultContentHash"],
+                "properties": {
+                  "approval": { "type": "object" },
+                  "execution": {
+                    "required": ["claim", "importedAt"],
+                    "properties": { "status": { "const": "returned" }, "attempts": { "const": 1 } }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "superseded" } }, "required": ["status"] },
+          "then": {
+            "required": ["supersession"],
+            "properties": {
+              "approval": { "type": "null" },
+              "execution": {
+                "properties": { "status": { "const": "not_started" }, "attempts": { "const": 0 } },
+                "not": { "anyOf": [{ "required": ["claim"] }, { "required": ["importedAt"] }] }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "brollResult": {
+      "type": "object",
+      "required": ["schemaVersion", "kind", "status", "handoffId", "content", "resultContentHash", "review", "assetRegistration", "importedAt"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "kind": { "const": "minimax-broll-result" },
+        "status": { "enum": ["pending_user_review", "acceptance_pending_registration", "accepted", "needs_revision", "stale"] },
+        "handoffId": { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" },
+        "content": {
+          "type": "object",
+          "required": ["handoffId", "inputHash", "handoffContentHash", "executionClaimHash", "manifestPath", "manifestSha256", "video", "keyframes"],
+          "properties": {
+            "handoffId": { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" },
+            "inputHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "handoffContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "executionClaimHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "manifestPath": { "type": "string", "minLength": 1 },
+            "manifestSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "video": {
+              "type": "object",
+              "required": ["path", "sha256", "sizeBytes", "probe"],
+              "properties": {
+                "path": { "type": "string", "minLength": 1 },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "sizeBytes": { "type": "integer", "minimum": 1 },
+                "probe": {
+                  "type": "object",
+                  "required": ["durationSeconds", "formatName", "videoCodec", "width", "height"],
+                  "properties": {
+                    "durationSeconds": { "type": ["number", "null"] },
+                    "formatName": { "type": ["string", "null"] },
+                    "videoCodec": { "type": ["string", "null"] },
+                    "width": { "type": ["integer", "null"] },
+                    "height": { "type": ["integer", "null"] }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "keyframes": {
+              "type": "array",
+              "minItems": 3,
+              "items": {
+                "type": "object",
+                "required": ["role", "timeSeconds", "path", "sha256", "sizeBytes"],
+                "properties": {
+                  "role": { "enum": ["entry", "climax", "exit", "support"] },
+                  "timeSeconds": { "type": "number", "minimum": 0 },
+                  "path": { "type": "string", "minLength": 1 },
+                  "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "sizeBytes": { "type": "integer", "minimum": 1 }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "resultContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "review": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["decision", "reviewer", "authority", "resultContentHash", "handoffContentHash", "videoSha256", "keyframeSha256", "reviewedAt", "notes", "rights"],
+              "properties": {
+                "decision": { "enum": ["accept", "revise"] },
+                "reviewer": { "type": "string", "minLength": 1 },
+                "authority": { "const": "user" },
+                "resultContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "handoffContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "videoSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "keyframeSha256": { "type": "array", "minItems": 3, "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+                "reviewedAt": { "type": "string", "format": "date-time" },
+                "notes": { "type": ["string", "null"] },
+                "rights": {
+                  "anyOf": [
+                    { "type": "null" },
+                    {
+                      "type": "object",
+                      "required": ["status", "basis", "confirmedBy", "confirmedAt"],
+                      "properties": {
+                        "status": { "const": "confirmed_for_project_use" },
+                        "basis": { "type": "string", "minLength": 1 },
+                        "confirmedBy": { "type": "string", "minLength": 1 },
+                        "confirmedAt": { "type": "string", "format": "date-time" }
+                      },
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "assetRegistration": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["assetId", "slotId", "planContentHash", "handoffId", "inputHash", "resultContentHash", "videoSha256", "registeredAt"],
+              "properties": {
+                "assetId": { "type": "string", "pattern": "^asset_[a-f0-9]{16}$" },
+                "slotId": { "type": "string", "pattern": "^broll_[a-f0-9]{20}$" },
+                "planContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "handoffId": { "type": "string", "pattern": "^BRL-[A-F0-9]{24}$" },
+                "inputHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "resultContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "videoSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "registeredAt": { "type": "string", "format": "date-time" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "importedAt": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "pending_user_review" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "review": { "type": "null" },
+              "assetRegistration": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "acceptance_pending_registration" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "review": {
+                "type": "object",
+                "properties": {
+                  "decision": { "const": "accept" },
+                  "rights": { "type": "object" }
+                }
+              },
+              "assetRegistration": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "accepted" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "review": {
+                "type": "object",
+                "properties": {
+                  "decision": { "const": "accept" },
+                  "rights": { "type": "object" }
+                }
+              },
+              "assetRegistration": { "type": "object" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "needs_revision" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "review": {
+                "type": "object",
+                "properties": {
+                  "decision": { "const": "revise" },
+                  "rights": { "type": "null" }
+                }
+              },
+              "assetRegistration": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "stale" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "review": {
+                "anyOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "properties": { "rights": { "type": "null" } }
+                  }
+                ]
+              },
+              "assetRegistration": { "type": "null" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "recreationApplication": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "status",
+        "planContentHash",
+        "targetTranscriptHash",
+        "cutPlanHash",
+        "editPlanBeforeHash",
+        "proposedEditPlanContentHash",
+        "referenceBindingsHash",
+        "mappings",
+        "reviewer",
+        "startedAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "status": { "enum": ["pending", "rollback_pending", "completed", "rolled_back"] },
+        "planContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "targetTranscriptHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "cutPlanHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "editPlanBeforeHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "proposedEditPlanContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "referenceBindingsHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "mappings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["recreationShotId", "editShotId"],
+            "properties": {
+              "recreationShotId": { "type": "string", "pattern": "^tshot_[a-f0-9]{20}$" },
+              "editShotId": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "reviewer": { "type": "string", "minLength": 1 },
+        "startedAt": { "type": "string", "minLength": 1 },
+        "editPlanAfterHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "completedAt": { "type": "string", "minLength": 1 },
+        "rollbackEditPlanContentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "rollbackStartedAt": { "type": "string", "minLength": 1 },
+        "rollbackReviewer": { "type": "string", "minLength": 1 },
+        "rollbackAuthority": { "enum": ["user", "operator"] },
+        "rollbackNotes": { "type": ["string", "null"] },
+        "rollbackRequestedAt": { "type": "string", "minLength": 1 },
+        "rolledBackBy": { "type": "string", "minLength": 1 },
+        "rolledBackAt": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": { "required": ["editPlanAfterHash", "completedAt"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "rollback_pending" } }, "required": ["status"] },
+          "then": { "required": ["rollbackEditPlanContentHash", "rollbackStartedAt", "rollbackReviewer", "rollbackAuthority", "rollbackRequestedAt"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "rolled_back" } }, "required": ["status"] },
+          "then": { "required": ["rolledBackBy", "rolledBackAt"] }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

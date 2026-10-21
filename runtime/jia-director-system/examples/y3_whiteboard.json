@@ -1,0 +1,57 @@
+{
+  "grammar": "y3_whiteboard",
+  "duration": 4,
+  "fps": 30,
+  "width": 960,
+  "height": 540,
+  "theme": "chalk",
+  "cues": [
+    {
+      "at": 0.0,
+      "kind": "draw",
+      "text": "25 分钟",
+      "data": {
+        "icon": "clock"
+      }
+    },
+    {
+      "at": 0.6,
+      "kind": "point",
+      "text": "这段时间只做一件事"
+    },
+    {
+      "at": 1.12,
+      "kind": "draw",
+      "text": "不切换",
+      "data": {
+        "icon": "target"
+      }
+    },
+    {
+      "at": 1.64,
+      "kind": "point",
+      "text": "铃响就休息 5 分钟"
+    },
+    {
+      "at": 2.16,
+      "kind": "draw",
+      "text": "换口气",
+      "data": {
+        "icon": "bulb"
+      }
+    },
+    {
+      "at": 2.72,
+      "kind": "point",
+      "text": "四轮后长休一次"
+    },
+    {
+      "at": 3.28,
+      "kind": "highlight",
+      "data": {
+        "target": "draw",
+        "index": 0
+      }
+    }
+  ]
+}

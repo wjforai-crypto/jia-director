@@ -1,0 +1,10 @@
+{
+  "name": "video-skill-hyperframes-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Isolated pinned HyperFrames CLI runtime; no Skill deployment",
+  "type": "module",
+  "dependencies": {
+    "hyperframes": "0.7.103"
+  }
+}

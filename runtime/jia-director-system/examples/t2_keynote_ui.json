@@ -1,0 +1,54 @@
+{
+  "grammar": "t2_keynote_ui",
+  "duration": 6,
+  "fps": 30,
+  "width": 960,
+  "height": 540,
+  "theme": "navy",
+  "cues": [
+    {
+      "at": 0,
+      "kind": "card",
+      "text": "一份 JSON 出的图",
+      "sub": "数据：英伟达 10-K 年报",
+      "image": "../runtime/huashu/engine/examples/assets/财经图表_横屏.png"
+    },
+    {
+      "at": 0.8,
+      "kind": "highlight",
+      "data": {
+        "rect": [
+          0.648,
+          0.245,
+          0.104,
+          0.105
+        ]
+      }
+    },
+    {
+      "at": 2,
+      "kind": "card",
+      "text": "竖屏换一套排版",
+      "sub": "同一份数据",
+      "image": "../runtime/huashu/engine/examples/assets/营收图_竖屏.png"
+    },
+    {
+      "at": 4.2,
+      "kind": "number",
+      "text": "可换的动画语法",
+      "data": {
+        "value": 8,
+        "suffix": " 种"
+      }
+    },
+    {
+      "at": 5,
+      "kind": "card",
+      "text": "时长精确到帧",
+      "sub": "帧数 = 时长 × 帧率",
+      "data": {
+        "icon": "clock"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "technical-hand-only-fixture",
+  "creation": "Pillow vector geometry",
+  "userSelectedStyle": false,
+  "humanCharacter": false,
+  "poses": {
+    "rest": "hand-rest.png",
+    "talk": "hand-talk.png",
+    "point": "hand-point.png",
+    "shrug": "hand-shrug.png"
+  }
+}

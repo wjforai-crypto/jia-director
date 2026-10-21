@@ -1,0 +1,7 @@
+{
+  "grammar":"y3_whiteboard","duration":3,"width":640,"height":360,"fps":30,"theme":"paper",
+  "cues":[
+    {"at":0,"kind":"draw","text":"先看时间","data":{"icon":"clock"}},
+    {"at":1.4,"kind":"draw","text":"再做计划","data":{"icon":"calendar"}}
+  ]
+}
