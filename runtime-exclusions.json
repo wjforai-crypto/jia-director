@@ -1,5 +1,5 @@
 {
-  "reason": "User explicitly excluded TTS from this upload. Original-audio editing, ASR, alignment and composition are retained. Unused legacy helpers also omitted.",
+  "reason": "User excluded TTS. Unused coupled provider modules, unused legacy helpers and the unused legacy chart template are also omitted; the patched 2.0.2 chart template is retained at runtime/video-workspace/runtime/livecanvas-remotion.",
   "files": [
     "runtime/jia-director-system/runtime/huashu/capabilities.py",
     "runtime/jia-director-system/runtime/huashu/koubo.py",
@@ -30,6 +30,15 @@
     "runtime/jia-director-system/vendor/huashu-art-motion/scripts/images.py",
     "runtime/jia-director-system/vendor/huashu-art-motion/scripts/voice_review.py",
     "runtime/jia-director-system/vendor/huashu-art-motion/tests/test_images.py",
-    "runtime/jia-director-system/vendor/huashu-art-motion/tests/test_voice_review.py"
+    "runtime/jia-director-system/vendor/huashu-art-motion/tests/test_voice_review.py",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/src/index.tsx",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/data.json",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/LICENSE.txt",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/NOTICE.md",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/package-lock.json",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/package.json",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/render.mjs",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/THIRD_PARTY_NOTICES.txt",
+    "runtime/video-workspace/skill-src/jia-video/assets/livecanvas-remotion/tsconfig.json"
   ]
 }
