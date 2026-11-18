@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   ARTIFACT_FILES,
@@ -9,6 +9,8 @@ import {
   type VideoProject,
 } from "./contracts.js";
 import { createHash } from "node:crypto";
+import { readJson } from "./json-store.js";
+import { withProjectStateLock } from "./project-state-lock.js";
 
 export interface InitProjectInput {
   projectDir: string;
@@ -31,10 +33,27 @@ function stableProjectId(input: Pick<InitProjectInput, "title" | "lane" | "sourc
 }
 
 async function writeJson(filePath: string, payload: unknown): Promise<void> {
-  await writeFile(filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await writeFile(filePath, `${JSON.stringify(payload, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
 }
 
 export async function initProject(input: InitProjectInput): Promise<VideoProject> {
+  await mkdir(input.projectDir, { recursive: true });
+  return withProjectStateLock(input.projectDir, "init-project", () => initProjectLocked(input));
+}
+
+async function initProjectLocked(input: InitProjectInput): Promise<VideoProject> {
+  const projectFile = path.join(input.projectDir, "project.json");
+  const files = new Set(await readdir(input.projectDir));
+  const artifacts = Object.values(ARTIFACT_FILES);
+  if (files.has("project.json")) {
+    const existing = await readJson<VideoProject>(projectFile);
+    if (existing.projectId !== stableProjectId(input)) throw new Error("Project directory already belongs to a different project");
+    if (artifacts.some(file => !files.has(file))) throw new Error("Existing project has missing records; restore them before continuing");
+    return existing;
+  }
+  if (artifacts.some(file => files.has(file))) {
+    throw new Error("Project directory contains existing records without project.json; restore the original project instead of reinitializing");
+  }
   const now = new Date().toISOString();
   const privacy = input.privacy ?? "internal";
   const project: VideoProject = {
@@ -66,8 +85,6 @@ export async function initProject(input: InitProjectInput): Promise<VideoProject
     updatedAt: now,
   };
 
-  await mkdir(input.projectDir, { recursive: true });
-  await writeJson(path.join(input.projectDir, "project.json"), project);
   await writeJson(path.join(input.projectDir, ARTIFACT_FILES.assets), {
     schemaVersion: SCHEMA_VERSION,
     assets: [],
@@ -122,5 +139,6 @@ export async function initProject(input: InitProjectInput): Promise<VideoProject
     entries: [],
   });
 
+  await writeJson(projectFile, project);
   return project;
 }

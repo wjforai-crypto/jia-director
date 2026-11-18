@@ -62,6 +62,23 @@ test("init creates the complete versioned project contract", async () => {
     assert.equal(project.privacy.externalProcessingAuthorization.status, "not_required");
     assert.equal(project.artifacts.transcript, "transcript.json");
     assert.match(project.projectId, /^vf_[a-f0-9]{16}$/);
+
+    const records = ["assets.json", "transcript.json", "review.json"];
+    for (const [index, name] of records.entries()) {
+      await writeFile(path.join(projectDir, name), JSON.stringify({ preservedRecord: index }), "utf8");
+    }
+    const args = ["init", "--project", projectDir, "--title", project.title, "--lane", "speech", "--source", sourcePath];
+    const repeated = runCli(args);
+    assert.equal(repeated.status, 0, repeated.stderr);
+    for (const [index, name] of records.entries()) {
+      assert.equal(await readFile(path.join(projectDir, name), "utf8"), JSON.stringify({ preservedRecord: index }));
+    }
+    const partial = path.join(projectDir, "project.json");
+    await rm(partial);
+    const recovered = runCli(args);
+    assert.equal(recovered.status, 1);
+    assert.match(recovered.stderr, /existing records without project.json/);
+    assert.equal(await readFile(path.join(projectDir, "review.json"), "utf8"), '{"preservedRecord":2}');
   } finally {
     await rm(tempRoot, { recursive: true, force: true });
   }

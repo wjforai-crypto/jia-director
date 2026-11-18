@@ -15,6 +15,7 @@ interface TranscriptSegment {
 }
 
 interface TranscriptFile {
+  sourceAssetId?: string;
   segments: TranscriptSegment[];
   words: unknown[];
   contentHash: string;
@@ -40,6 +41,9 @@ async function createCutPlanLocked(input: { projectDir: string; strategy: string
   }
   const transcriptPath = path.join(input.projectDir, ARTIFACT_FILES.transcript);
   const transcript = await readJson<TranscriptFile>(transcriptPath);
+  if (project.source.assetId && project.source.assetId !== transcript.sourceAssetId) {
+    throw new Error("The primary recording has changed. Transcribe the current a-roll before building a cut plan.");
+  }
   if (transcript.segments.length === 0 || transcript.words.length === 0) {
     throw new Error("plan-cut requires a non-empty transcript");
   }

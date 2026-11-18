@@ -3,7 +3,7 @@ import { stat } from "node:fs/promises";
 import { ARTIFACT_FILES, type VideoProject } from "./contracts.js";
 import { readJson, writeJson } from "./json-store.js";
 import { sha256File } from "./media.js";
-import { withProjectStateLock } from "./project-state-lock.js";
+import { assertProjectStateLockHeld, withProjectStateLock } from "./project-state-lock.js";
 
 type VersionStage = "draft1" | "draft2" | "final_candidate";
 type ConfirmationGate = "initial" | "final";
@@ -59,12 +59,13 @@ export async function recordVersion(input: {
   return withProjectStateLock(input.projectDir, "record-version", () => recordVersionLocked(input));
 }
 
-async function recordVersionLocked(input: {
+export async function recordVersionLocked(input: {
   projectDir: string;
   stage: VersionStage;
   filePath: string;
   label: string;
 }) {
+  assertProjectStateLockHeld(input.projectDir, "record-version");
   const { projectPath, project } = await loadProject(input.projectDir);
   const { reviewPath, review } = await loadReview(input.projectDir);
   if (input.stage === "draft1" && !new Set(["visual_direction_ready", "draft1_pending_user", "revision_in_progress"]).has(project.workflowStatus)) {

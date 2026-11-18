@@ -5,13 +5,7 @@ import { ARTIFACT_FILES, SCHEMA_VERSION, type VideoProject } from "./contracts.j
 import { readJson, writeJson } from "./json-store.js";
 import { sha256Canonical } from "./canonical-json.js";
 import { withProjectStateLock } from "./project-state-lock.js";
-
-interface AssetRecord {
-  assetId: string;
-  path: string;
-  role: string;
-  sha256: string;
-}
+import { loadCurrentSourceAsset, type SourceAsset } from "./media.js";
 
 interface WhisperToken {
   text?: string;
@@ -40,7 +34,7 @@ function isSpokenToken(text: string): boolean {
   return trimmed.length > 0 && !/^\[_.*\]$/.test(trimmed);
 }
 
-function normalizeWhisper(payload: WhisperJson, sourceAsset: AssetRecord, engine: string) {
+function normalizeWhisper(payload: WhisperJson, sourceAsset: SourceAsset, engine: string) {
   const words: Array<Record<string, unknown> & { id: string; start: number; end: number; text: string; confidence: number | null }> = [];
   const segments = (payload.transcription ?? []).map((segment, segmentIndex) => {
     const segmentStart = Number(segment.offsets?.from ?? 0) / 1000;
@@ -97,13 +91,6 @@ function runProcess(executable: string, args: string[], label: string): void {
   }
 }
 
-async function loadSourceAsset(projectDir: string): Promise<AssetRecord> {
-  const assets = await readJson<{ assets: AssetRecord[] }>(path.join(projectDir, ARTIFACT_FILES.assets));
-  const source = assets.assets.find((asset) => asset.role === "a-roll");
-  if (!source) throw new Error("transcribe requires a registered a-roll asset");
-  return source;
-}
-
 export async function transcribeProject(input: {
   projectDir: string;
   engine: "import" | "whisper";
@@ -127,7 +114,7 @@ async function transcribeProjectLocked(input: {
   if (project.workflowStatus !== "source_registered") {
     throw new Error(`transcribe requires source_registered, got ${project.workflowStatus}`);
   }
-  const sourceAsset = await loadSourceAsset(input.projectDir);
+  const sourceAsset = await loadCurrentSourceAsset(input.projectDir, project);
   let whisperJsonPath: string;
   let engineName: string;
 

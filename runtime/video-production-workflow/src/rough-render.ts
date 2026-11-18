@@ -3,9 +3,10 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { ARTIFACT_FILES, type VideoProject } from "./contracts.js";
 import { readJson } from "./json-store.js";
-import { recordVersion } from "./review-gates.js";
+import { loadCurrentSourceAsset, sha256File } from "./media.js";
+import { withProjectStateLock } from "./project-state-lock.js";
+import { recordVersionLocked } from "./review-gates.js";
 
-interface AssetRecord { path: string; role: string }
 interface CutOperation {
   id: string;
   kind: "speech" | "pause";
@@ -15,7 +16,7 @@ interface CutOperation {
   targetDuration?: number;
   transcript?: string;
 }
-interface CutPlan { reviewStatus: string; operations: CutOperation[] }
+interface CutPlan { reviewStatus: string; transcriptHash: string; operations: CutOperation[] }
 interface RenderClip { sourceIn: number; sourceOut: number; operation?: CutOperation }
 
 function formatTimestamp(seconds: number): string {
@@ -85,16 +86,25 @@ function runFfmpeg(sourcePath: string, clips: RenderClip[], outputPath: string):
   if (result.status !== 0) throw new Error(`FFmpeg rough render failed: ${result.stderr.trim() || result.stdout.trim()}`);
 }
 
-export async function renderRough(input: { projectDir: string; outputPath: string; srtPath: string; label: string }) {
+interface RoughRenderInput { projectDir: string; outputPath: string; srtPath: string; label: string }
+
+export async function renderRough(input: RoughRenderInput) {
+  return withProjectStateLock(input.projectDir, "render-rough", () => renderRoughLocked(input));
+}
+
+async function renderRoughLocked(input: RoughRenderInput) {
   const project = await readJson<VideoProject>(path.join(input.projectDir, "project.json"));
   if (!new Set(["visual_direction_ready", "draft1_pending_user", "revision_in_progress"]).has(project.workflowStatus)) {
     throw new Error(`render-rough requires visual_direction_ready, draft1_pending_user, or revision_in_progress; got ${project.workflowStatus}`);
   }
   const cutPlan = await readJson<CutPlan>(path.join(input.projectDir, ARTIFACT_FILES.cutPlan));
   if (cutPlan.reviewStatus !== "approved") throw new Error(`render-rough requires an approved cut plan, got ${cutPlan.reviewStatus}`);
-  const assets = await readJson<{ assets: AssetRecord[] }>(path.join(input.projectDir, ARTIFACT_FILES.assets));
-  const source = assets.assets.find((asset) => asset.role === "a-roll");
-  if (!source) throw new Error("render-rough requires a registered a-roll asset");
+  const source = await loadCurrentSourceAsset(input.projectDir, project);
+  const transcriptPath = path.join(input.projectDir, ARTIFACT_FILES.transcript);
+  const transcript = await readJson<{ sourceAssetId?: string }>(transcriptPath);
+  if (transcript.sourceAssetId !== source.assetId || cutPlan.transcriptHash !== await sha256File(transcriptPath)) {
+    throw new Error("Rough render requires a transcript and approved cut plan for the current a-roll");
+  }
   const clips = buildClips(cutPlan.operations);
   if (clips.length === 0) throw new Error("render-rough has no retained media clips");
 
@@ -112,6 +122,6 @@ export async function renderRough(input: { projectDir: string; outputPath: strin
     throw error;
   }
   await writeFile(srtPath, buildSrt(clips), "utf8");
-  const version = await recordVersion({ projectDir: input.projectDir, stage: "draft1", filePath: outputPath, label: input.label });
+  const version = await recordVersionLocked({ projectDir: input.projectDir, stage: "draft1", filePath: outputPath, label: input.label });
   return { outputPath, srtPath, clipCount: clips.length, versionId: version.versionId, sha256: version.sha256 };
 }

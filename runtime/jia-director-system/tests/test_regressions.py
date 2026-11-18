@@ -3,7 +3,9 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from jia_director.core import directory_binding,verify_binding,write_json
+from jia_director.core import directory_binding,verify_binding,write_json,read_json
+from jia_director.clip import validate_spec
+from jia_director.regression import regression
 from jia_director.storyboard import numeric_tokens
 from jia_director.voice import compile_cues
 from tests import test_voice_delivery as delivery_tests
@@ -31,6 +33,27 @@ class BoundaryTests(unittest.TestCase):
             (p/'a.wav').write_bytes(b'not decoded in this unit fixture')
             with patch('jia_director.voice.run',return_value={'stdout':'{"format":{"duration":"4"}}'}):
                 with self.assertRaisesRegex(ValueError,'no output frame'):compile_cues(p/'words.json',p/'a.wav',p/'spec.json',p/'map.json',p/'out')
+
+    def test_regression_variants_keep_relative_image_bound_to_original_spec(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image = root/'poster.png'
+            image.write_bytes(b'fixture path only')
+            spec = root/'spec.json'
+            write_json(spec, {'grammar': 'y2_vox', 'duration': 2,
+                              'cues': [{'at': 0, 'kind': 'image', 'image': 'poster.png'}]})
+
+            def render_fixture(spec_path, output, **options):
+                normalized = validate_spec(read_json(spec_path), spec_path.parent)
+                self.assertEqual(Path(normalized['cues'][0]['image']), image.resolve())
+                if options.get('audit'):
+                    write_json(output/'layout-upstream.json', {})
+                    return {'status': 'passed'}
+                return {'frames': []}
+
+            with patch('jia_director.regression.render', render_fixture):
+                result = regression([spec], root/'run', workers=1)
+            self.assertEqual((result['passed'], result['total']), (5, 5))
 
 class DeliveryRegressionTests(unittest.TestCase):
     setUp=delivery_tests.DeliveryTests.setUp
