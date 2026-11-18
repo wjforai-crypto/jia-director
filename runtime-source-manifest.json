@@ -64,8 +64,8 @@
       "sourceProject": "jia-director-system",
       "sourceFile": "jia_director/regression.py",
       "publishedFile": "runtime/jia-director-system/jia_director/regression.py",
-      "sourceSha256": "14732ef7c8a7e80bdb00ef19ac46388c9a729017bacd230b34da4835232f9ad8",
-      "publishedSha256": "14732ef7c8a7e80bdb00ef19ac46388c9a729017bacd230b34da4835232f9ad8",
+      "sourceSha256": "8c582aec11129646cef70b0e47f8dbe7fdfcbb124727c2b15bd6f61c56ad66af",
+      "publishedSha256": "8c582aec11129646cef70b0e47f8dbe7fdfcbb124727c2b15bd6f61c56ad66af",
       "distributionAdaptation": false
     },
     {
@@ -96,8 +96,8 @@
       "sourceProject": "jia-director-system",
       "sourceFile": "jia_director/voice.py",
       "publishedFile": "runtime/jia-director-system/jia_director/voice.py",
-      "sourceSha256": "4e7fe9c9443ccf94fe707f9208cca12e90d337185dabbff53e841f22642484b7",
-      "publishedSha256": "4e7fe9c9443ccf94fe707f9208cca12e90d337185dabbff53e841f22642484b7",
+      "sourceSha256": "361f903d47c1ef19b984939412a86d272eb721928a689eb8018aa2b741657e87",
+      "publishedSha256": "361f903d47c1ef19b984939412a86d272eb721928a689eb8018aa2b741657e87",
       "distributionAdaptation": false
     },
     {
@@ -6704,16 +6704,16 @@
       "sourceProject": "jia-director-system",
       "sourceFile": "tests/test_regressions.py",
       "publishedFile": "runtime/jia-director-system/tests/test_regressions.py",
-      "sourceSha256": "f86a3e0d8ed9464c5ac960468aa1d3c73ff0b849b1e31f027da96f195d40102e",
-      "publishedSha256": "f86a3e0d8ed9464c5ac960468aa1d3c73ff0b849b1e31f027da96f195d40102e",
+      "sourceSha256": "d8242a023580d9209f912b556d3431203b6ce1e2f0fb4ca4f30f8ee2fd7e9853",
+      "publishedSha256": "d8242a023580d9209f912b556d3431203b6ce1e2f0fb4ca4f30f8ee2fd7e9853",
       "distributionAdaptation": false
     },
     {
       "sourceProject": "jia-director-system",
       "sourceFile": "tests/test_voice_delivery.py",
       "publishedFile": "runtime/jia-director-system/tests/test_voice_delivery.py",
-      "sourceSha256": "e0869b664ee9b57aceb26406bccdfeca911c2c3cae128142d104789c55c657f1",
-      "publishedSha256": "e0869b664ee9b57aceb26406bccdfeca911c2c3cae128142d104789c55c657f1",
+      "sourceSha256": "936e8244979dc52bdc68dc704402eaa12a3d572db5018a3611049da1ce00e473",
+      "publishedSha256": "936e8244979dc52bdc68dc704402eaa12a3d572db5018a3611049da1ce00e473",
       "distributionAdaptation": false
     },
     {
@@ -7224,16 +7224,16 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/contracts.ts",
       "publishedFile": "runtime/video-production-workflow/src/contracts.ts",
-      "sourceSha256": "b1e2e0a23f099a320f428ec7857ce8c4ebfd0a7b59977950629fa23ec1914237",
-      "publishedSha256": "b1e2e0a23f099a320f428ec7857ce8c4ebfd0a7b59977950629fa23ec1914237",
+      "sourceSha256": "539517c2f92751d1d8fea8bc39c4ebf01d2ace363ab15f73de1c190fac5e9bbd",
+      "publishedSha256": "539517c2f92751d1d8fea8bc39c4ebf01d2ace363ab15f73de1c190fac5e9bbd",
       "distributionAdaptation": false
     },
     {
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/cut-plan.ts",
       "publishedFile": "runtime/video-production-workflow/src/cut-plan.ts",
-      "sourceSha256": "9914a3d5fb293f2499f0670c872ea2f8d030f5ff0db0ec5df0635a53239ea64a",
-      "publishedSha256": "9914a3d5fb293f2499f0670c872ea2f8d030f5ff0db0ec5df0635a53239ea64a",
+      "sourceSha256": "77318a5834f4dac7aaa01e4edbb2a0912c572d3db32aebb73dc8f84e6c41b706",
+      "publishedSha256": "77318a5834f4dac7aaa01e4edbb2a0912c572d3db32aebb73dc8f84e6c41b706",
       "distributionAdaptation": false
     },
     {
@@ -7296,8 +7296,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/media.ts",
       "publishedFile": "runtime/video-production-workflow/src/media.ts",
-      "sourceSha256": "130d0c45255638e36c0e4b1482becbff1a06a1f5638d410f5f1126362479d75a",
-      "publishedSha256": "130d0c45255638e36c0e4b1482becbff1a06a1f5638d410f5f1126362479d75a",
+      "sourceSha256": "14e011fe6046d7cbf8f79226479e0f143c38cc00c1b78ee9ac55522136bae304",
+      "publishedSha256": "14e011fe6046d7cbf8f79226479e0f143c38cc00c1b78ee9ac55522136bae304",
       "distributionAdaptation": false
     },
     {
@@ -7352,8 +7352,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/project.ts",
       "publishedFile": "runtime/video-production-workflow/src/project.ts",
-      "sourceSha256": "0e6a0df4850fbbdb09aec027273046d56ae7e6ac6c4bf228473c0480051290ff",
-      "publishedSha256": "0e6a0df4850fbbdb09aec027273046d56ae7e6ac6c4bf228473c0480051290ff",
+      "sourceSha256": "5fc8adf6da2276c60a2ac3866451276dafa1edaba4ac297ab2c724222dcd7004",
+      "publishedSha256": "5fc8adf6da2276c60a2ac3866451276dafa1edaba4ac297ab2c724222dcd7004",
       "distributionAdaptation": false
     },
     {
@@ -7376,16 +7376,16 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/review-gates.ts",
       "publishedFile": "runtime/video-production-workflow/src/review-gates.ts",
-      "sourceSha256": "1aa68ced582cb0ca242aed6e2c7524df5e06ad21dd10a16d0dd77ebf57952544",
-      "publishedSha256": "1aa68ced582cb0ca242aed6e2c7524df5e06ad21dd10a16d0dd77ebf57952544",
+      "sourceSha256": "1284c785ce83cdf8d65186955b2254962c8c12417bf69ca668ab6b0c7393ab7b",
+      "publishedSha256": "1284c785ce83cdf8d65186955b2254962c8c12417bf69ca668ab6b0c7393ab7b",
       "distributionAdaptation": false
     },
     {
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/rough-render.ts",
       "publishedFile": "runtime/video-production-workflow/src/rough-render.ts",
-      "sourceSha256": "162cb532ac56a131ba8c0e605988ac9a0efedc22fdf3c654959154d71a36d808",
-      "publishedSha256": "162cb532ac56a131ba8c0e605988ac9a0efedc22fdf3c654959154d71a36d808",
+      "sourceSha256": "964b55915b1a0b82d56114c536cebd1a99517f2baa4448f734a5fcf47921ce87",
+      "publishedSha256": "964b55915b1a0b82d56114c536cebd1a99517f2baa4448f734a5fcf47921ce87",
       "distributionAdaptation": false
     },
     {
@@ -7400,8 +7400,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/transcription.ts",
       "publishedFile": "runtime/video-production-workflow/src/transcription.ts",
-      "sourceSha256": "4f20595b66ab778c7447ac7ca9826e61c9098cd915547db7412a73f5513f89e6",
-      "publishedSha256": "4f20595b66ab778c7447ac7ca9826e61c9098cd915547db7412a73f5513f89e6",
+      "sourceSha256": "65b4a5858cb2472c6bf3885bcfd0925b926ae0e827e1003848e74431da6bbb01",
+      "publishedSha256": "65b4a5858cb2472c6bf3885bcfd0925b926ae0e827e1003848e74431da6bbb01",
       "distributionAdaptation": false
     },
     {
@@ -7424,8 +7424,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "schemas/contracts.schema.json",
       "publishedFile": "runtime/video-production-workflow/schemas/contracts.schema.json",
-      "sourceSha256": "2ca1d0c15577eb845a5baf1a81200239447c9c9dc0635b0ba782ccc63c67ea79",
-      "publishedSha256": "2ca1d0c15577eb845a5baf1a81200239447c9c9dc0635b0ba782ccc63c67ea79",
+      "sourceSha256": "ed92293bd912647868685f554322516eec514988dbca45871d49148e90a9f56d",
+      "publishedSha256": "ed92293bd912647868685f554322516eec514988dbca45871d49148e90a9f56d",
       "distributionAdaptation": false
     },
     {
@@ -7472,8 +7472,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "tests/init.test.ts",
       "publishedFile": "runtime/video-production-workflow/tests/init.test.ts",
-      "sourceSha256": "1e6a294461a6de0d6582b2895ce8d0ad93747b0f901f5d42ff616c91016a113c",
-      "publishedSha256": "1e6a294461a6de0d6582b2895ce8d0ad93747b0f901f5d42ff616c91016a113c",
+      "sourceSha256": "d21801a5491fb5365087f98d9f7d8eda0401fa8a1506139844eb8fa193d4b7c5",
+      "publishedSha256": "d21801a5491fb5365087f98d9f7d8eda0401fa8a1506139844eb8fa193d4b7c5",
       "distributionAdaptation": false
     },
     {
@@ -7552,8 +7552,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "tests/rough-render.test.ts",
       "publishedFile": "runtime/video-production-workflow/tests/rough-render.test.ts",
-      "sourceSha256": "51703d01125c5350c18ebca461e25388540f9d42e7176aef48b14d85d7c33559",
-      "publishedSha256": "51703d01125c5350c18ebca461e25388540f9d42e7176aef48b14d85d7c33559",
+      "sourceSha256": "aba4b454527483377d398af8923d708d11c84058337a23eb6ed5844b30d23686",
+      "publishedSha256": "aba4b454527483377d398af8923d708d11c84058337a23eb6ed5844b30d23686",
       "distributionAdaptation": false
     },
     {
