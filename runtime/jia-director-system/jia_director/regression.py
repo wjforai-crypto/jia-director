@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor,as_completed
 from pathlib import Path
 
 from .core import read_json,write_json,new_dir,binding
-from .clip import render
+from .clip import render,validate_spec
 
 TEXT_KEYS={'text','sub','label','title','caption','key','source','unit'}
 
@@ -29,7 +29,8 @@ def variants(spec):
 def regression(spec_files,output,*,workers=2,full=False):
     out=new_dir(output);jobs=[]
     for spec_path in spec_files:
-        spec_path=Path(spec_path).resolve();base=read_json(spec_path)
+        spec_path=Path(spec_path).resolve()
+        base=validate_spec(read_json(spec_path),spec_path.parent)
         for variant,spec in variants(base).items():
             p=out/'inputs'/spec_path.stem/(variant+'.json');write_json(p,spec)
             jobs.append((spec_path.stem,variant,p))

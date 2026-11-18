@@ -17,7 +17,7 @@ function runCli(args: string[]) {
   });
 }
 
-function createFixture(filePath: string) {
+function createFixture(filePath: string, color = "blue") {
   const result = spawnSync(
     "ffmpeg",
     [
@@ -27,7 +27,7 @@ function createFixture(filePath: string) {
       "-f",
       "lavfi",
       "-i",
-      "testsrc2=s=320x240:r=30:d=4",
+      `color=c=${color}:s=320x240:r=30:d=4`,
       "-f",
       "lavfi",
       "-i",
@@ -57,11 +57,13 @@ test("approved cut decisions render a real draft, SRT, edit plan, and hash-bound
   try {
     const projectDir = path.join(tempRoot, "project");
     const sourcePath = path.join(tempRoot, "source.mp4");
+    const retakePath = path.join(tempRoot, "retake.mp4");
     const whisperPath = path.join(tempRoot, "whisper.json");
     const cutReviewPath = path.join(tempRoot, "cut-review.json");
     const outputPath = path.join(tempRoot, "draft1.mp4");
     const srtPath = path.join(tempRoot, "draft1.srt");
     createFixture(sourcePath);
+    createFixture(retakePath, "red");
 
     assert.equal(
       runCli(["init", "--project", projectDir, "--title", "真实粗剪", "--lane", "speech", "--source", sourcePath]).status,
@@ -94,6 +96,14 @@ test("approved cut decisions render a real draft, SRT, edit plan, and hash-bound
       "utf8",
     );
     assert.equal(runCli(["transcribe", "--project", projectDir, "--engine", "import", "--input", whisperPath]).status, 0);
+    const retake = runCli(["ingest", "--project", projectDir, "--asset", retakePath, "--role", "a-roll", "--provenance", "user-owned"]);
+    assert.equal(retake.status, 0, retake.stderr);
+    const stalePlan = runCli(["plan-cut", "--project", projectDir, "--strategy", "semantic+silence"]);
+    assert.equal(stalePlan.status, 1);
+    assert.match(stalePlan.stderr, /primary recording has changed/);
+    assert.equal(runCli(["transcribe", "--project", projectDir, "--engine", "import", "--input", whisperPath]).status, 0);
+    const latestTranscript = JSON.parse(await readFile(path.join(projectDir, "transcript.json"), "utf8"));
+    assert.equal(latestTranscript.sourceAssetId, JSON.parse(retake.stdout).assetId);
     assert.equal(runCli(["plan-cut", "--project", projectDir, "--strategy", "semantic+silence"]).status, 0);
 
     const cutPlanPath = path.join(projectDir, "cut-plan.json");
@@ -159,6 +169,10 @@ test("approved cut decisions render a real draft, SRT, edit plan, and hash-bound
     assert.equal(probe.status, 0, probe.stderr);
     const duration = Number(probe.stdout.trim());
     assert.ok(duration >= 1.9 && duration <= 2.4, `unexpected duration ${duration}`);
+    const frame = spawnSync("ffmpeg", ["-v", "error", "-i", outputPath, "-frames:v", "1",
+      "-vf", "scale=1:1", "-pix_fmt", "rgb24", "-f", "rawvideo", "-"], { windowsHide: true });
+    assert.equal(frame.status, 0, frame.stderr.toString());
+    assert.ok(frame.stdout[0] > 235 && frame.stdout[2] < 15, "the exported draft should contain the red retake");
     const srt = await readFile(srtPath, "utf8");
     assert.match(srt, /第一句/);
     assert.match(srt, /最终句/);

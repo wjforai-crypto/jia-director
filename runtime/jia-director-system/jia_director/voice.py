@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+from math import isfinite
 from pathlib import Path
 import re
 
@@ -85,6 +86,39 @@ def compile_cues(words_path,audio_path,spec_path,mapping_path,output,*,offset=0,
     write_json(out/'cues.receipt.json',evidence)
     return evidence
 
+def _audio_stream_range(path):
+    def probe(*options):
+        result = run([tool('ffprobe'), '-v', 'error', '-select_streams', 'a:0', *options, '-of', 'json', path])
+        return json.loads(result['stdout'])
+
+    def number(value):
+        try:
+            result = float(value)
+        except (TypeError, ValueError):
+            return None
+        return result if isfinite(result) else None
+
+    streams = probe('-show_entries', 'stream=start_time,duration').get('streams', [])
+    if not streams:
+        raise ValueError('Media has no selectable audio stream')
+    duration = number(streams[0].get('duration'))
+    if duration and duration > 0:
+        return number(streams[0].get('start_time')) or 0.0, duration
+
+    # Containers such as Matroska may omit stream duration. Read the same
+    # selected audio stream's packet timestamps instead of container duration.
+    starts, ends = [], []
+    for packet in probe('-show_entries', 'packet=pts_time,duration_time').get('packets', []):
+        start = number(packet.get('pts_time'))
+        if start is not None:
+            starts.append(start)
+            ends.append(start + max(0, number(packet.get('duration_time')) or 0))
+    if not starts or max(ends) <= min(starts):
+        raise ValueError('Cannot verify selected audio stream duration')
+    first = min(starts)
+    return first, max(ends) - first
+
+
 def compose(timeline_path,output):
     timeline_path=Path(timeline_path).resolve();timeline=read_json(timeline_path)
     v=timeline['video']
@@ -97,7 +131,16 @@ def compose(timeline_path,output):
         if abs(t*v['fps']-round(t*v['fps']))>1e-6:raise ValueError('Timeline times must lie on output frame grid')
     on_grid(v['duration'])
     timeline_binding=binding(timeline_path);source=source_binding()
-    base=timeline_path.parent;out=new_dir(output);concat=[];evidence=[];total=0
+    base=timeline_path.parent
+    audio=timeline.get('audio')
+    audio_file=(base/audio['file']).resolve() if audio else None
+    evidence=[]
+    if audio_file is not None:
+        evidence.append(binding(audio_file))
+        _, duration = _audio_stream_range(audio_file)
+        if duration+0.02<v['duration']:
+            raise ValueError('Audio shorter than timeline; no automatic padding or looping')
+    out=new_dir(output);concat=[];total=0
     for i,shot in enumerate(shots):
         path=(base/shot['file']).resolve();d=finite_number(shot['duration'],'shot.duration',0.001)
         on_grid(d)
@@ -123,17 +166,19 @@ def compose(timeline_path,output):
         graph=f"[1:v]trim=duration={d},setpts=PTS-STARTPTS+{a}/TB[ol];[0:v][ol]overlay=x={int(overlay.get('x',0))}:y={int(overlay.get('y',0))}:enable='gte(t,{a})*lt(t,{a+d})':eof_action=pass:format=auto[v]"
         run([tool('ffmpeg'),'-v','error','-i',current,'-i',p,'-filter_complex',graph,'-map','[v]','-an','-c:v','libx264','-pix_fmt','yuv420p','-r',str(v['fps']),'-t',str(v['duration']),nextvideo],timeout=600,log=out/f'overlay-{i:03d}.command.json')
         evidence.append(binding(p));current=nextvideo
-    final=out/'film.mp4';audio=timeline.get('audio')
-    if audio:
-        p=(base/audio['file']).resolve();evidence.append(binding(p))
-        ad=float(json.loads(run([tool('ffprobe'),'-v','error','-show_format','-of','json',p])['stdout'])['format']['duration'])
-        if ad+0.02<v['duration']:raise ValueError('Audio shorter than timeline; no automatic padding or looping')
-        run([tool('ffmpeg'),'-v','error','-i',current,'-i',p,'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','192k','-t',str(v['duration']),final],log=out/'audio.command.json')
+    final=out/'film.mp4'
+    if audio_file is not None:
+        run([tool('ffmpeg'),'-v','error','-i',current,'-i',audio_file,'-map','0:v:0','-map','1:a:0','-af','asetpts=PTS-STARTPTS','-c:v','copy','-c:a','aac','-b:a','192k','-t',str(v['duration']),final],log=out/'audio.command.json')
     else:
         import shutil
         shutil.copyfile(current,final)
     verify_nested_bindings([timeline_binding,source,evidence])
     result={'kind':'jia-parent-composition','status':'passed','input':timeline_binding,'source':source,'sources':evidence,'media':media_probe(final,expected=v),'subtitleOwner':'parent-timeline','audioOwner':'parent-timeline','userAccepted':False,'reportPath':str(out/'receipt.json')}
     if result['media']['audioStreams']!=(1 if audio else 0):raise ValueError('Unexpected audio owner/stream count')
+    if audio_file is not None:
+        start, duration = _audio_stream_range(final)
+        if abs(start)>0.05 or min(duration, start+duration)+0.05<v['duration']:
+            raise ValueError('Rendered audio stream does not cover the parent timeline')
+        result['media']['audioRange'] = {'start': start, 'duration': duration}
     write_json(out/'receipt.json',result)
     return result

@@ -80,6 +80,7 @@ export interface VideoProject {
   };
   source: {
     path: string;
+    assetId?: string;
   };
   brief?: Record<string, unknown>;
   artifacts: ProjectArtifacts;

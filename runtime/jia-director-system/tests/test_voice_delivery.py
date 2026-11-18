@@ -1,10 +1,11 @@
 import copy
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 
-from jia_director.core import binding,write_json,sha256
-from jia_director.voice import normalize_words,keyword_interval,compile_cues
+from jia_director.core import binding,write_json,sha256,run,tool
+from jia_director.voice import normalize_words,keyword_interval,compile_cues,compose
 from jia_director.delivery import validate_delivery
 
 class VoiceTests(unittest.TestCase):
@@ -25,6 +26,31 @@ class VoiceTests(unittest.TestCase):
     def test_whisper_special_tokens_not_visible_words(self):
         words,kind=normalize_words({'transcription':[{'tokens':[{'text':'[_BEG_]','offsets':{'from':0,'to':0}},{'text':'孩子','offsets':{'from':200,'to':600}}]}]})
         self.assertEqual(len(words),1);self.assertEqual(words[0]['start'],.2);self.assertEqual(kind,'ASR-token-offsets')
+
+@unittest.skipUnless(shutil.which('ffmpeg') and shutil.which('ffprobe'), 'requires ffmpeg and ffprobe')
+class CompositionAudioTests(unittest.TestCase):
+    def test_composition_checks_selected_audio_range(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ffmpeg = [tool('ffmpeg'), '-v', 'error']
+            video = ['-f', 'lavfi', '-i', 'color=size=160x90:rate=10:duration=3']
+            run([*ffmpeg, *video, '-c:v', 'libx264', root/'shot.mp4'])
+            run([*ffmpeg, *video, '-f', 'lavfi', '-i', 'sine=duration=0.5',
+                 '-c:v', 'libx264', '-c:a', 'aac', root/'short.mkv'])
+            run([*ffmpeg, '-f', 'lavfi', '-i', 'sine=duration=3', root/'enough.wav'])
+            timeline = {'video': {'width': 160, 'height': 90, 'fps': 10, 'duration': 3},
+                        'shots': [{'file': 'shot.mp4', 'duration': 3}], 'audio': {'file': 'short.mkv'}}
+            spec = root/'timeline.json'
+            write_json(spec, timeline)
+            with self.assertRaisesRegex(ValueError, 'Audio shorter than timeline'):
+                compose(spec, root/'bad-output')
+            self.assertFalse((root/'bad-output'/'receipt.json').exists())
+            timeline['audio']['file'] = 'enough.wav'
+            write_json(spec, timeline)
+            result = compose(spec, root/'good-output')
+            self.assertEqual(result['status'], 'passed')
+            self.assertGreaterEqual(result['media']['audioRange']['duration'], 2.95)
+
 
 class DeliveryTests(unittest.TestCase):
     def setUp(self):

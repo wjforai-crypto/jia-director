@@ -118,7 +118,7 @@
         "source": {
           "type": "object",
           "required": ["path"],
-          "properties": { "path": { "type": "string" } }
+          "properties": { "path": { "type": "string" }, "assetId": { "type": "string", "minLength": 1 } }
         },
         "artifacts": {
           "type": "object",
