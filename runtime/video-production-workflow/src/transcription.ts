@@ -2,10 +2,10 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { ARTIFACT_FILES, SCHEMA_VERSION, type VideoProject } from "./contracts.js";
-import { readJson, writeJson } from "./json-store.js";
+import { readJson, writeJsonAtomic } from "./json-store.js";
 import { sha256Canonical } from "./canonical-json.js";
 import { withProjectStateLock } from "./project-state-lock.js";
-import { loadCurrentSourceAsset, type SourceAsset } from "./media.js";
+import { loadCurrentSourceAsset, sha256File, type SourceAsset } from "./media.js";
 
 interface WhisperToken {
   text?: string;
@@ -91,30 +91,34 @@ function runProcess(executable: string, args: string[], label: string): void {
   }
 }
 
-export async function transcribeProject(input: {
+interface TranscribeInput {
   projectDir: string;
   engine: "import" | "whisper";
   inputPath?: string;
   language?: string;
   whisperCli?: string;
   model?: string;
-}) {
+  expectedSourceHash?: string;
+  expectedTranscriptHash?: string;
+}
+
+export async function transcribeProject(input: TranscribeInput) {
   return withProjectStateLock(input.projectDir, "transcribe-project", () => transcribeProjectLocked(input));
 }
 
-async function transcribeProjectLocked(input: {
-  projectDir: string;
-  engine: "import" | "whisper";
-  inputPath?: string;
-  language?: string;
-  whisperCli?: string;
-  model?: string;
-}) {
+async function transcribeProjectLocked(input: TranscribeInput) {
   const project = await readJson<VideoProject>(path.join(input.projectDir, "project.json"));
   if (project.workflowStatus !== "source_registered") {
     throw new Error(`transcribe requires source_registered, got ${project.workflowStatus}`);
   }
   const sourceAsset = await loadCurrentSourceAsset(input.projectDir, project);
+  const transcriptPath = path.join(input.projectDir, ARTIFACT_FILES.transcript);
+  if (input.expectedSourceHash !== undefined && input.expectedSourceHash !== sourceAsset.sha256) {
+    throw new Error("Recording changed during transcription; result was not imported");
+  }
+  if (input.expectedTranscriptHash !== undefined && input.expectedTranscriptHash !== await sha256File(transcriptPath)) {
+    throw new Error("Transcript changed during transcription; result was not imported");
+  }
   let whisperJsonPath: string;
   let engineName: string;
 
@@ -145,7 +149,7 @@ async function transcribeProjectLocked(input: {
 
   const payload = await readJson<WhisperJson>(whisperJsonPath);
   const normalized = normalizeWhisper(payload, sourceAsset, engineName);
-  await writeJson(path.join(input.projectDir, ARTIFACT_FILES.transcript), normalized);
+  await writeJsonAtomic(transcriptPath, normalized);
   return {
     engine: normalized.engine,
     words: normalized.words.length,

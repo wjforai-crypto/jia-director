@@ -6832,8 +6832,8 @@
       "sourceProject": "视频剪辑skill",
       "sourceFile": "scripts/core-preflight.mjs",
       "publishedFile": "runtime/video-workspace/scripts/core-preflight.mjs",
-      "sourceSha256": "85e5fc7a204300586bc2a52fd65c712392648014e50fc33ba9f3c768c7537a3f",
-      "publishedSha256": "85e5fc7a204300586bc2a52fd65c712392648014e50fc33ba9f3c768c7537a3f",
+      "sourceSha256": "f75fb91936e0c07d7bdbed455213cf5e93fd5a84663c1f4efb078f08fcd4ecac",
+      "publishedSha256": "f75fb91936e0c07d7bdbed455213cf5e93fd5a84663c1f4efb078f08fcd4ecac",
       "distributionAdaptation": false
     },
     {
@@ -7216,8 +7216,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/cli.ts",
       "publishedFile": "runtime/video-production-workflow/src/cli.ts",
-      "sourceSha256": "f35c49cd39a43f6624b436d7a3588954a2781f7080894521a07068802063729c",
-      "publishedSha256": "f35c49cd39a43f6624b436d7a3588954a2781f7080894521a07068802063729c",
+      "sourceSha256": "ec9d1e54264b57c5fead39e624dc5062003367efe61ba27cede67800a17a0975",
+      "publishedSha256": "ec9d1e54264b57c5fead39e624dc5062003367efe61ba27cede67800a17a0975",
       "distributionAdaptation": false
     },
     {
@@ -7400,8 +7400,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "src/transcription.ts",
       "publishedFile": "runtime/video-production-workflow/src/transcription.ts",
-      "sourceSha256": "65b4a5858cb2472c6bf3885bcfd0925b926ae0e827e1003848e74431da6bbb01",
-      "publishedSha256": "65b4a5858cb2472c6bf3885bcfd0925b926ae0e827e1003848e74431da6bbb01",
+      "sourceSha256": "b18fb79ee8058946be1ba7b907faa5ce57f2c43f89c7b573f31dc8673edb1bda",
+      "publishedSha256": "b18fb79ee8058946be1ba7b907faa5ce57f2c43f89c7b573f31dc8673edb1bda",
       "distributionAdaptation": false
     },
     {
@@ -7552,8 +7552,8 @@
       "sourceProject": "video-production-workflow",
       "sourceFile": "tests/rough-render.test.ts",
       "publishedFile": "runtime/video-production-workflow/tests/rough-render.test.ts",
-      "sourceSha256": "aba4b454527483377d398af8923d708d11c84058337a23eb6ed5844b30d23686",
-      "publishedSha256": "aba4b454527483377d398af8923d708d11c84058337a23eb6ed5844b30d23686",
+      "sourceSha256": "296c0576e9d9bacc7e268f01826bb600876c7f941d825c828b2b5e22eccb4ff5",
+      "publishedSha256": "296c0576e9d9bacc7e268f01826bb600876c7f941d825c828b2b5e22eccb4ff5",
       "distributionAdaptation": false
     },
     {
