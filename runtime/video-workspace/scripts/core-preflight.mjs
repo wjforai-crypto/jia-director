@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { lstat, readFile } from 'node:fs/promises';
+import { lstat, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -44,6 +44,12 @@ export async function loadCanonicalCore(coreCli) {
   assert(typeof module.sha256Canonical === 'function', 'Configured core canonical-json.js does not export sha256Canonical');
   return { sha256Canonical: module.sha256Canonical, path: file, sha256: await fileHash(file) };
 }
+async function currentSource(project, projectFile, coreCli) {
+  const file = path.join(path.dirname(localPath(coreCli, '--core-cli')), 'media.js');
+  const { loadCurrentSourceAsset } = await import(pathToFileURL(file).href);
+  await sourceFile(localPath(projectFile.source?.path, 'project.source.path'));
+  return loadCurrentSourceAsset(project, projectFile);
+}
 function warningsForTranscript(transcript, cutPlan) {
   const warnings = [];
   const pauses = (cutPlan.operations ?? []).filter(operation => operation.kind === 'pause');
@@ -65,11 +71,21 @@ function warningsForTranscript(transcript, cutPlan) {
 export async function preflightCore(args, { coreCli } = {}) {
   const { command, options } = parseCoreArgs(args);
   const result = { ok: true, command, guarded: false, warnings: [], coreStateModified: false };
-  if (!new Set(['init', 'render-rough', 'qa-media']).has(command)) return result;
+  if (!new Set(['init', 'render-rough', 'qa-media', 'current-source']).has(command)) return result;
   const project = localPath(required(options, '--project'), '--project');
   result.guarded = true;
+  if (command === 'current-source') {
+    result.source = await currentSource(project, await readJson(path.join(project, 'project.json')), coreCli);
+    return result;
+  }
   if (command === 'init') {
-    for (const artifact of ARTIFACTS) await assertNew(path.join(project, artifact));
+    let entries = [];
+    try { entries = await readdir(project, { withFileTypes: true }); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    const records = entries.filter(entry => ARTIFACTS.includes(entry.name));
+    assert(!records.length || (records.length === ARTIFACTS.length && records.every(entry => entry.isFile())),
+      'Output already exists in an incomplete project; restore the original contracts before continuing');
+    // The core checks project identity and all contracts again under its project lock.
     const source = localPath(required(options, '--source'), '--source');
     await sourceFile(source);
     result.sourceSha256 = await fileHash(source);
@@ -86,17 +102,12 @@ export async function preflightCore(args, { coreCli } = {}) {
   assert(new Set([output, srt, partial].map(key)).size === 3, 'MP4, SRT, and partial output paths must be distinct');
   for (const file of [output, srt, partial]) await assertNew(file);
   const projectFile = await readJson(path.join(project, 'project.json'));
-  const assets = await readJson(path.join(project, 'assets.json'));
   const transcriptPath = path.join(project, 'transcript.json'), cutPath = path.join(project, 'cut-plan.json');
   const transcript = await readJson(transcriptPath), cutPlan = await readJson(cutPath), editPlan = await readJson(path.join(project, 'edit-plan.json'));
   assert(new Set(['visual_direction_ready', 'draft1_pending_user', 'revision_in_progress']).has(projectFile.workflowStatus), 'render-rough project state is not ready for a render');
-  const source = (assets.assets ?? []).find(asset => asset.role === 'a-roll');
-  assert(source, 'render-rough requires the actually registered a-roll asset');
+  const source = await currentSource(project, projectFile, coreCli);
   const sourcePath = localPath(source.path, 'a-roll path');
-  await sourceFile(sourcePath);
-  const sourceSha256 = await fileHash(sourcePath);
-  assert(sourceSha256 === source.sha256, 'Registered source SHA256 does not match the actual file');
-  assert(key(localPath(projectFile.source?.path, 'project.source.path')) === key(sourcePath), 'Project source path does not match the a-roll rendered by the core');
+  const sourceSha256 = source.sha256;
   assert(transcript.sourceAssetId === source.assetId && transcript.sourceAssetHash === sourceSha256, 'Transcript is not bound to this source asset/hash');
   assert(Array.isArray(transcript.segments) && transcript.segments.length && Array.isArray(transcript.words) && transcript.words.length, 'render-rough requires a real non-empty transcript');
   const canonical = await loadCanonicalCore(coreCli);

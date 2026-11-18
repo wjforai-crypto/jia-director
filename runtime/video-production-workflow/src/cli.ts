@@ -253,6 +253,8 @@ async function main(): Promise<void> {
       language: options.get("language"),
       whisperCli: options.get("whisper-cli"),
       model: options.get("model"),
+      expectedSourceHash: options.get("expected-source-hash"),
+      expectedTranscriptHash: options.get("expected-transcript-hash"),
     });
     process.stdout.write(`${JSON.stringify({ ok: true, ...transcription })}\n`);
     return;

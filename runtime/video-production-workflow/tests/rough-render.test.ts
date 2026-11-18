@@ -101,6 +101,11 @@ test("approved cut decisions render a real draft, SRT, edit plan, and hash-bound
     const stalePlan = runCli(["plan-cut", "--project", projectDir, "--strategy", "semantic+silence"]);
     assert.equal(stalePlan.status, 1);
     assert.match(stalePlan.stderr, /primary recording has changed/);
+    const priorTranscript = await readFile(path.join(projectDir, "transcript.json"));
+    const importTake = ["transcribe", "--project", projectDir, "--engine", "import", "--input", whisperPath];
+    assert.match(runCli([...importTake, "--expected-source-hash", JSON.parse(priorTranscript.toString()).sourceAssetHash]).stderr, /Recording changed/);
+    assert.match(runCli([...importTake, "--expected-transcript-hash", "0".repeat(64)]).stderr, /Transcript changed/);
+    assert.deepEqual(await readFile(path.join(projectDir, "transcript.json")), priorTranscript);
     assert.equal(runCli(["transcribe", "--project", projectDir, "--engine", "import", "--input", whisperPath]).status, 0);
     const latestTranscript = JSON.parse(await readFile(path.join(projectDir, "transcript.json"), "utf8"));
     assert.equal(latestTranscript.sourceAssetId, JSON.parse(retake.stdout).assetId);
